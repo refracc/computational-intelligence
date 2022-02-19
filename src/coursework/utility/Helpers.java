@@ -4,6 +4,10 @@ import coursework.Parameters;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * This class contains several helper functions that help in the creation of the Evolutionary Algorithm
+ * that is contained in the {@link coursework.ExampleEvolutionaryAlgorithm} class.
+ */
 public class Helpers {
 
     @Contract(pure = true)

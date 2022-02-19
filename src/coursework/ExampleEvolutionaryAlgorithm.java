@@ -98,7 +98,7 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
      *
      * @return A randomly-initialised population.
      */
-    private List<Individual> initialiseAugmented() {
+    private List<Individual> augmented() {
         population = new ArrayList<>();
 
         IntStream.range(0, Parameters.populationSize + 5000).mapToObj(i -> new Individual()).forEach(individual -> population.add(individual));
@@ -114,7 +114,7 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
      *
      * @return A randomly-initialised population.
      */
-    private List<Individual> initialisePositiveNegative() {
+    private List<Individual> positiveNegative() {
         population = new ArrayList<>();
 
         for (int i = 0; i < Parameters.populationSize; i++) {
@@ -135,7 +135,7 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
     /**
      * Generate part of a randomly-initialised population for the Evolutionary Algorithm.
      */
-    private void initialisePartially() {
+    private void partially() {
         Individual individual;
         population.sort(Comparator.reverseOrder());
 
@@ -172,7 +172,7 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
      *
      * @return A random individual from the population.
      */
-    private Individual randomSelection() {
+    private Individual random() {
         Individual individual = population.get(Parameters.random.nextInt(Parameters.populationSize));
         return individual.copy();
     }
@@ -182,7 +182,7 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
      *
      * @return An individual from the population.
      */
-    private Individual tournamentSelection() {
+    private Individual tournament() {
         Collections.shuffle(population);
         return population.stream().limit(Parameters.TOURNAMENT_SIZE).max(Comparator.naturalOrder()).orElse(null);
     }
@@ -193,7 +193,7 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
      *
      * @return An individual.
      */
-    private Individual rouletteSelection() {
+    private Individual roulette() {
         double sum = population.stream().mapToDouble(i -> 1 - i.fitness).sum();
         double r = sum * Parameters.random.nextDouble();
 
@@ -209,7 +209,7 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
      * Get an individual based on Ranked Fitness Proportionate.
      * @return The last individual in the list (if the for)
      */
-    private Individual oldRankedSelection() {
+    private Individual oldRanked() {
         population.sort(Comparator.reverseOrder());
 
         int random = Parameters.random.nextInt(Parameters.populationSize);
@@ -222,15 +222,90 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
     }
 
     /**
-     *
-     * @return
+     * Get an individual by using Ranked Selection
+     * @return An individual
      */
-    private Individual rankedSelection() {
-        double[] fitness = new double[Parameters.populationSize];
-
-        for (int i = 0; i < Parameters.populationSize; i++) fitness[i] = i + 1;
+    private Individual ranked() {
+        double[] fitness = IntStream.range(0, Parameters.populationSize).mapToDouble(i -> i + 1).toArray();
 
         Helpers.unitize1(fitness);
         return population.get(Helpers.random(fitness));
+    }
+
+    /* ********************************** */
+    /* *********** CROSSOVER ************ */
+    /* ********************************** */
+
+    /**
+     * Perform uniform crossover between 2 individuals.
+     * @param individual1 The first parent.
+     * @param individual2 The second parent.
+     * @return The new children post-crossover.
+     */
+    private @NotNull List<Individual> uniform(@NotNull Individual individual1, @NotNull Individual individual2) {
+        Individual i1 = new Individual();
+        Individual i2 = new Individual();
+
+        IntStream.range(0, individual1.chromosome.length).forEach(i -> {
+            if (Parameters.random.nextBoolean()) {
+                i1.chromosome[i] = individual1.chromosome[i];
+                i2.chromosome[i] = individual2.chromosome[i];
+            } else {
+                i1.chromosome[i] = individual2.chromosome[i];
+                i2.chromosome[i] = individual1.chromosome[i];
+            }
+        });
+
+        return Arrays.asList(i1, i2);
+    }
+
+    /**
+     * Perform one-point crossover between 2 individuals.
+     * @param individual1 The first parent.
+     * @param individual2 The second parent.
+     * @return The new children post-crossover.
+     */
+    private @NotNull List<Individual> onePoint(@NotNull Individual individual1, @NotNull Individual individual2) {
+        Individual i1 = new Individual();
+        Individual i2 = new Individual();
+
+        int cut = Parameters.random.nextInt(i1.chromosome.length);
+
+        IntStream.range(0, individual1.chromosome.length).forEach(i -> {
+            if (i < cut) {
+                i1.chromosome[i] = individual1.chromosome[i];
+                i2.chromosome[i] = individual2.chromosome[i];
+            } else {
+                i1.chromosome[i] = individual2.chromosome[i];
+                i2.chromosome[i] = individual1.chromosome[i];
+            }
+        });
+
+        return Arrays.asList(i1, i2);
+    }
+
+    /**
+     * Perform two-point crossover between 2 individuals.
+     * @param individual1 The first parent.
+     * @param individual2 The second parent.
+     * @return The new children post-crossover.
+     */
+    private @NotNull List<Individual> twoPoint(@NotNull Individual individual1, @NotNull Individual individual2) {
+        Individual i1 = new Individual();
+        Individual i2 = new Individual();
+        int cut1 = Parameters.random.nextInt(i1.chromosome.length);
+        int cut2 = Parameters.random.nextInt(i1.chromosome.length);
+
+        IntStream.range(0, individual1.chromosome.length).forEach(i -> {
+            if ((i < cut1) || (i >= cut2)) {
+                i1.chromosome[i] = individual1.chromosome[i];
+                i2.chromosome[i] = individual2.chromosome[i];
+            } else {
+                i1.chromosome[i] = individual2.chromosome[i];
+                i2.chromosome[i] = individual1.chromosome[i];
+            }
+        });
+
+        return Arrays.asList(i1, i2);
     }
 }
