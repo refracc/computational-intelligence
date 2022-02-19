@@ -19,8 +19,10 @@ public class SimulatedAnnealing extends NeuralNetwork {
                         : v * Math.max(0, Math.min(1, (v + 1) / 2));
             }
             case LEAKY_RELU -> {
+                return (v > 0) ? v : (v / 100);
             }
             case RELU -> {
+
             }
             case SELU -> {
             }
