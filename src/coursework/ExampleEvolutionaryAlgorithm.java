@@ -5,8 +5,11 @@ import model.Individual;
 import model.NeuralNetwork;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * Implement an Evolutionary Algorithm (extending {@link NeuralNetwork} to solve the Lunar Landers problem.
@@ -95,10 +98,7 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
     private List<Individual> initialiseAugmented() {
         population = new ArrayList<>();
 
-        for (int i = 0; i < Parameters.populationSize + 5000; i++) {
-            Individual individual = new Individual();
-            population.add(individual);
-        }
+        IntStream.range(0, Parameters.populationSize + 5000).mapToObj(i -> new Individual()).forEach(individual -> population.add(individual));
 
         // Evaluate population
         evaluatePopulation(population);
@@ -118,7 +118,8 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
             Individual i1 = new Individual();
             Individual i2 = i1.copy();
 
-            for (int j = 0; j < i2.chromosome.length; j++) i2.chromosome[j] = (0 - i2.chromosome[j]); // Flip
+            // Flip
+            Arrays.setAll(i2.chromosome, j -> (0 - i2.chromosome[j]));
 
             i1.fitness = Fitness.evaluate(i1, this);
             i2.fitness = Fitness.evaluate(i2, this);
@@ -126,5 +127,36 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
             population.add(i2.fitness > i1.fitness ? i1 : i2);
         }
         return population;
+    }
+
+    /**
+     * Generate part of a randomly-initialised population for the Evolutionary Algorithm.
+     */
+    private void initialisePartially() {
+        Individual individual;
+        population.sort(Comparator.reverseOrder());
+
+        for (int i = 0; i < 15; i++) {
+            individual = new Individual();
+            population.remove(0);
+            population.add(individual);
+        }
+        evaluatePopulation(population);
+    }
+
+    /**
+     * Keep the best N individuals of a population for evaluation.
+     *
+     * @param n The number of individuals to keep.
+     */
+    private void keepBestNIndividuals(int n) {
+        population.sort(Comparator.reverseOrder());
+
+        IntStream.range(0, Parameters.populationSize - n).mapToObj(i -> new Individual()).forEach(individual -> {
+            population.remove(0);
+            population.add(individual);
+        });
+
+        evaluatePopulation(population);
     }
 }
