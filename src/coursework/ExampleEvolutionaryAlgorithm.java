@@ -70,6 +70,10 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
         return best;
     }
 
+    /* ********************************** */
+    /* ********* INITIALISATION ********* */
+    /* ********************************** */
+
     /**
      * Generate a randomly-initialised population for the Evolutionary Algorithm.
      *
@@ -159,4 +163,10 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
 
         evaluatePopulation(population);
     }
+
+    /* ********************************** */
+    /* *********** SELECTION ************ */
+    /* ********************************** */
+
+
 }
