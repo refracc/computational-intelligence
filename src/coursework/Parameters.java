@@ -38,12 +38,12 @@ public class Parameters {
 	 * Custom parameters
 	 * Currently set to first values in enums.
 	 */
-	public static volatile Initialisation initialisation = Initialisation.AUGMENTED;
-	public static volatile Selection selection = Selection.RANDOM;
-	public static volatile Crossover crossover = Crossover.ONE_POINT;
-	public static volatile Mutation mutation = Mutation.ANNEALING;
-	public static volatile Replacement replacement = Replacement.TOURNAMENT;
-	public static volatile Activation activation = Activation.ELU;
+	public static final Initialisation INITIALISATION = Initialisation.AUGMENTED;
+	public static final Selection SELECTION = Selection.RANDOM;
+	public static final Crossover CROSSOVER = Crossover.ONE_POINT;
+	public static final Mutation MUTATION = Mutation.ANNEALING;
+	public static final Replacement REPLACEMENT = Replacement.TOURNAMENT;
+	public static final Activation ACTIVATION = Activation.ELU;
 
 	/**
 	 * Do not change any methods that appear below here.
