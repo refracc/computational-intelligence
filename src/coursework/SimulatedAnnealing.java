@@ -1,5 +1,7 @@
 package coursework;
 
+import model.Fitness;
+import model.Individual;
 import model.NeuralNetwork;
 
 /**
@@ -18,13 +20,57 @@ public class SimulatedAnnealing extends NeuralNetwork {
             case STEP -> (v <= 0) ? -1.0d : 1.0d;
             case SWISH -> (v * (1 / (1 + Math.exp(-v))));
             case TANH -> (v < -20.0d) ? -1.0d : (v > 20.0d) ? 1.0d : Math.tanh(v);
-            default -> (v > 0) ? v : Math.exp(v) - 1;
+            default -> (v > 0) ? v : (Math.exp(v) - 1) / 10;
         };
     }
 
     @Override
     public void run() {
+        double temperature = Parameters.TEMPERATURE;
+        double cooling = Parameters.COOLING_RATE;
 
+        // Initialise a new individual and
+        // evaluate its fitness.
+        Individual individual = new Individual();
+        individual.fitness = Fitness.evaluate(individual, this);
+
+        // Set this new individual as
+        // the best individual.
+        best = individual.copy();
+
+        // Do for all evaluations in the program.
+        for (int i = 0; i < Parameters.maxEvaluations; i++) {
+            Individual newIndividual = individual.copy();
+
+            // Obtain pseudo-random gene locations from within the chromosome.
+            int position1 = Parameters.random.nextInt(newIndividual.chromosome.length);
+            int position2 = Parameters.random.nextInt(newIndividual.chromosome.length);
+
+            // Set up swaps.
+            double swap1 = newIndividual.chromosome[position1];
+            double swap2 = newIndividual.chromosome[position2];
+
+            // Perform the swap.
+            newIndividual.chromosome[position1] = swap2;
+            newIndividual.chromosome[position2] = swap1;
+
+            // Evaluate its fitness.
+            newIndividual.fitness = Fitness.evaluate(newIndividual, this);
+
+            // Decide to accept neighbouring chromosome.
+            double acceptance = acceptance(individual.fitness, newIndividual.fitness, temperature);
+            individual = (acceptance > Parameters.random.nextDouble()) ? newIndividual.copy() : individual;
+
+            // Replace the best solution that has been found thus far...
+            best = (individual.fitness < best.fitness) ? individual.copy() : best;
+
+            // Cool the system down a little...
+            temperature *= (1 - cooling);
+            System.out.println(i + "\t" + best);
+
+            outputStats();
+            saveNeuralNetwork();
+        }
     }
 
     private double acceptance(double currentFitness, double newFitness, double temperature) {
