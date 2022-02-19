@@ -43,7 +43,7 @@ public class Parameters {
 	public static final Crossover CROSSOVER = Crossover.ONE_POINT;
 	public static final Mutation MUTATION = Mutation.ANNEALING;
 	public static final Replacement REPLACEMENT = Replacement.TOURNAMENT;
-	public static final Activation ACTIVATION = Activation.ELU;
+	public static final Activation ACTIVATION = Activation.TANH;
 	public static final double COOLING_RATE = 0.0011d;
 	public static final double TEMPERATURE = 100000d;
 
