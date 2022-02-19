@@ -3,6 +3,7 @@ package coursework;
 import model.Fitness;
 import model.Individual;
 import model.NeuralNetwork;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -48,7 +49,7 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
      *
      * @param individuals The list of individuals (population) to evaluate.
      */
-    private void evaluatePopulation(List<Individual> individuals) {
+    private void evaluatePopulation(@NotNull List<Individual> individuals) {
         for (Individual i : individuals) {
             i.fitness = Fitness.evaluate(i, this);
         }
@@ -168,5 +169,13 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
     /* *********** SELECTION ************ */
     /* ********************************** */
 
-
+    /**
+     * Select a random individual from the population.
+     *
+     * @return A random individual from the population.
+     */
+    private Individual randomSelection() {
+        Individual individual = population.get(Parameters.random.nextInt(Parameters.populationSize));
+        return individual.copy();
+    }
 }
