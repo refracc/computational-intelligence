@@ -12,10 +12,10 @@ public class SimulatedAnnealing extends NeuralNetwork {
     public double activationFunction(double v) {
         switch (Parameters.ACTIVATION) {
             default -> {
-                return (v > 0) ? v : Math.pow(Math.E, v) - 1;
+                return (v > 0) ? v : Math.exp(v) - 1;
             }
             case HARD_ELISH -> {
-                return (v < 0) ? Math.max(0, Math.min(1, (v + 1) / 2)) * (Math.pow(Math.E, v) - 1)
+                return (v < 0) ? Math.max(0, Math.min(1, (v + 1) / 2)) * (Math.exp(v) - 1)
                         : v * Math.max(0, Math.min(1, (v + 1) / 2));
             }
             case LEAKY_RELU -> {
@@ -26,13 +26,13 @@ public class SimulatedAnnealing extends NeuralNetwork {
             }
             case SELU -> {
                 return (v > 0) ? v * 1.0507009
-                        : 1.0507009 * (1.673263 * Math.pow(Math.E, v)) - 1.673263;
+                        : 1.0507009 * (1.673263 * Math.exp(v)) - 1.673263;
             }
             case STEP -> {
                 return (v <= 0) ? -1.0d : 1.0d;
             }
             case SWISH -> {
-
+                return (v * (1 / (1 + Math.exp(-v))));
             }
             case TANH -> {
             }
