@@ -67,10 +67,9 @@ public class SimulatedAnnealing extends NeuralNetwork {
             // Cool the system down a little...
             temperature *= (1 - cooling);
             System.out.println(i + "\t" + best);
-
-            outputStats();
-            saveNeuralNetwork();
         }
+        outputStats();
+        saveNeuralNetwork();
     }
 
     private double acceptance(double currentFitness, double newFitness, double temperature) {

@@ -18,7 +18,7 @@ public class Parameters {
 	private static int numGenes = calculateNumGenes();
 
 	// Set the NeuralNetwork class here to use your code from the GUI
-	public static final Class<? extends NeuralNetwork> neuralNetworkClass = ExampleEvolutionaryAlgorithm.class;
+	public static final Class<? extends NeuralNetwork> neuralNetworkClass = SimulatedAnnealing.class;
 	public static double maxGene = 3;
 	public static double minGene = -3; // specifies minimum and maximum weight values
 	public static int popSize = 40;
