@@ -5,6 +5,7 @@ import model.Fitness;
 import model.Individual;
 import model.NeuralNetwork;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -307,5 +308,22 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
         });
 
         return Arrays.asList(i1, i2);
+    }
+
+    /**
+     * Perform arithmetic crossover between 2 individuals.
+     * @param individual1 The first parent.
+     * @param individual2 The second parent.
+     * @return The new children post-crossover.
+     */
+    private @NotNull @Unmodifiable List<Individual> arithmetic(@NotNull Individual individual1, @NotNull Individual individual2) {
+        Individual individual = new Individual();
+
+        IntStream.range(0, individual1.chromosome.length).forEach(i -> {
+           double average = (individual1.chromosome[i] + individual2.chromosome[i]) / 2;
+           individual.chromosome[i] = average;
+        });
+
+        return Collections.singletonList(individual);
     }
 }
