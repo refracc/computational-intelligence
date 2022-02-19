@@ -1,5 +1,6 @@
 package coursework;
 
+import coursework.utility.Helpers;
 import model.Fitness;
 import model.Individual;
 import model.NeuralNetwork;
@@ -202,5 +203,34 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
         }
         // Should a rounding error occur, the last element in the population will be returned.
         return population.get(-1);
+    }
+
+    /**
+     * Get an individual based on Ranked Fitness Proportionate.
+     * @return The last individual in the list (if the for)
+     */
+    private Individual oldRankedSelection() {
+        population.sort(Comparator.reverseOrder());
+
+        int random = Parameters.random.nextInt(Parameters.populationSize);
+        for (int i = 0; i < Parameters.populationSize; i++) {
+            random--;
+            if (i > random) return population.get(i);
+        }
+
+        return population.get(-1);
+    }
+
+    /**
+     *
+     * @return
+     */
+    private Individual rankedSelection() {
+        double[] fitness = new double[Parameters.populationSize];
+
+        for (int i = 0; i < Parameters.populationSize; i++) fitness[i] = i + 1;
+
+        Helpers.unitize1(fitness);
+        return population.get(Helpers.random(fitness));
     }
 }
