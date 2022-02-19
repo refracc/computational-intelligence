@@ -49,5 +49,16 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
 		}
 	}
 
+	/**
+	 * Find the best (the lowest fitness) individual of the population.
+	 *
+	 * @return The best performing individual.
+	 */
+	private Individual getBestIndividual() {
+		best = null;
+		for (Individual i : population)
+			best = (i.fitness < best.fitness || best == null) ? best = i.copy() : best;
 
+		return best;
+	}
 }
