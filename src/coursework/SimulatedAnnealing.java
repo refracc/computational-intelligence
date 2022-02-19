@@ -67,8 +67,8 @@ public class SimulatedAnnealing extends NeuralNetwork {
             // Cool the system down a little...
             temperature *= (1 - cooling);
             System.out.println(i + "\t" + best);
+            outputStats();
         }
-        outputStats();
         saveNeuralNetwork();
     }
 
