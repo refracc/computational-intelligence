@@ -26,7 +26,7 @@ public class Parameters {
 	public static final double TEMPERATURE = 100000d;
 	public static double maxGene = 3;
 	public static double minGene = -3; // specifies minimum and maximum weight values
-	public static int popSize = 40;
+	public static int populationSize = 40;
 	public static int maxEvaluations = 20000;
 	// Parameters for mutation
 	// Rate = probability of changing a gene

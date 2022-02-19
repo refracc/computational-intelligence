@@ -4,6 +4,7 @@ import model.Fitness;
 import model.Individual;
 import model.NeuralNetwork;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -56,11 +57,31 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
      */
     private Individual getBestIndividual() {
         best = null;
-        for (Individual i : population)
-            best = (i.fitness < best.fitness || best == null) ? best = i.copy() : best;
+        for (Individual i : population) {
+            if (best.fitness > i.fitness) {
+                best = i.copy();
+            }
+        }
 
         return best;
     }
 
+    /**
+     * Generate a randomly-initialised population for the Evolutionary Algorithm.
+     *
+     * @return A randomly-initialised population.
+     */
+    private List<Individual> initialise() {
+        population = new ArrayList<>();
 
+        // Create new population
+        // Has weights initialised randomly within the constructor.
+        for (int i = 0; i < Parameters.populationSize; i++) {
+            Individual individual = new Individual();
+            population.add(individual);
+        }
+
+        evaluatePopulation(population);
+        return population;
+    }
 }
