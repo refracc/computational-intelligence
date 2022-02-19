@@ -35,9 +35,9 @@ public class SimulatedAnnealing extends NeuralNetwork {
                 return (v * (1 / (1 + Math.exp(-v))));
             }
             case TANH -> {
+                return (v < -20.0d) ? -1.0d : (v > 20.0d) ? 1.0d : Math.tanh(v);
             }
         }
-        return 0;
     }
 
     @Override
