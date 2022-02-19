@@ -22,7 +22,7 @@ public class SimulatedAnnealing extends NeuralNetwork {
                 return (v > 0) ? v : (v / 100);
             }
             case RELU -> {
-
+                return (v > 0) ? v : -1;
             }
             case SELU -> {
             }
