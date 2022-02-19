@@ -26,4 +26,8 @@ public class SimulatedAnnealing extends NeuralNetwork {
     public void run() {
 
     }
+
+    private double acceptance(double currentFitness, double newFitness, double temperature) {
+        return (newFitness < currentFitness) ? 1.0d : Math.exp((currentFitness - newFitness) / temperature);
+    }
 }
