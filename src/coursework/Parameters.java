@@ -44,6 +44,8 @@ public class Parameters {
 	public static final Mutation MUTATION = Mutation.ANNEALING;
 	public static final Replacement REPLACEMENT = Replacement.TOURNAMENT;
 	public static final Activation ACTIVATION = Activation.ELU;
+	public static final double COOLING_RATE = 0.0011d;
+	public static final double TEMPERATURE = 100000d;
 
 	/**
 	 * Do not change any methods that appear below here.
