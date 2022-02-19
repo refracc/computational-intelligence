@@ -1,7 +1,7 @@
 package coursework.options;
 
 public enum Mutation {
-    STANDARD,
+    ANNEALING,
     CONSTRAINED,
-    ANNEALING
+    STANDARD
 }
