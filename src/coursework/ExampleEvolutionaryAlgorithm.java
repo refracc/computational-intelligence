@@ -6,6 +6,7 @@ import model.NeuralNetwork;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Implement an Evolutionary Algorithm (extending {@link NeuralNetwork} to solve the Lunar Landers problem.
@@ -83,5 +84,25 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
 
         evaluatePopulation(population);
         return population;
+    }
+
+
+    /**
+     * Generate a larger randomly-initialised population for the Evolutionary Algorithm.
+     *
+     * @return A randomly-initialised population.
+     */
+    private List<Individual> initialiseAugmented() {
+        population = new ArrayList<>();
+
+        for (int i = 0; i < Parameters.populationSize + 5000; i++) {
+            Individual individual = new Individual();
+            population.add(individual);
+        }
+
+        // Evaluate population
+        evaluatePopulation(population);
+        // Reduce the population down to the proper population size after comparison & evaluation.
+        return population.stream().sorted(Individual::compareTo).limit(Parameters.populationSize).collect(Collectors.toCollection(ArrayList::new));
     }
 }
