@@ -1,26 +1,26 @@
 package coursework;
 
+import model.LunarParameters;
+import model.LunarParameters.DataSet;
+import model.NeuralNetwork;
+
 import java.lang.reflect.Field;
 import java.util.Random;
-import model.LunarParameters;
-import model.NeuralNetwork;
-import model.LunarParameters.DataSet;
 
 public class Parameters {
- 
 	/**
-	 * These parameter values can be changed 
-	 * You may add other Parameters as required to this class 
-	 * 
+	 * These parameter values can be changed
+	 * You may add other Parameters as required to this class
 	 */
-	private static int numHidden = 5;	
+	private static int numHidden = 5;
 	private static int numGenes = calculateNumGenes();
 	public static double minGene = -3; // specifies minimum and maximum weight values 
-	public static double maxGene = +3;
-		
+	//set the NeuralNetwork class here to use your code from the GUI
+	public static final Class<? extends NeuralNetwork> neuralNetworkClass = ExampleEvolutionaryAlgorithm.class;
+
 	public static int popSize = 40;
 	public static int maxEvaluations = 20000;
-	
+
 	// Parameters for mutation 
 	// Rate = probability of changing a gene
 	// Change = the maximum +/- adjustment to the gene value
@@ -30,9 +30,7 @@ public class Parameters {
 	//Random number generator used throughout the application
 	public static long seed = System.currentTimeMillis();
 	public static Random random = new Random(seed);
-
-	//set the NeuralNetwork class here to use your code from the GUI
-	public static Class neuralNetworkClass = ExampleEvolutionaryAlgorithm.class;
+	public static double maxGene = 3;
 	
 	/**
 	 * Do not change any methods that appear below here.
@@ -43,10 +41,8 @@ public class Parameters {
 		return numGenes;
 	}
 
-	
 	private static int calculateNumGenes() {
-		int num = (NeuralNetwork.numInput * numHidden) + (numHidden * NeuralNetwork.numOutput) + numHidden + NeuralNetwork.numOutput;
-		return num;
+		return (NeuralNetwork.numInput * numHidden) + (numHidden * NeuralNetwork.numOutput) + numHidden + NeuralNetwork.numOutput;
 	}
 
 	public static int getNumHidden() {
@@ -59,7 +55,7 @@ public class Parameters {
 	}
 
 	public static String printParams() {
-		String str = "";
+		StringBuilder str = new StringBuilder();
 		for(Field field : Parameters.class.getDeclaredFields()) {
 			String name = field.getName();
 			Object val = null;
@@ -69,10 +65,10 @@ public class Parameters {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			str += name + " \t" + val + "\r\n";
-			
+			str.append(name).append(" \t").append(val).append("\r\n");
+
 		}
-		return str;
+		return str.toString();
 	}
 	
 	public static void setDataSet(DataSet dataSet) {
