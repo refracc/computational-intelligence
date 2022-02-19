@@ -1,5 +1,6 @@
 package coursework;
 
+import coursework.options.*;
 import model.LunarParameters;
 import model.LunarParameters.DataSet;
 import model.NeuralNetwork;
@@ -8,6 +9,7 @@ import java.lang.reflect.Field;
 import java.util.Random;
 
 public class Parameters {
+
 	/**
 	 * These parameter values can be changed
 	 * You may add other Parameters as required to this class
@@ -33,10 +35,21 @@ public class Parameters {
 	public static Random random = new Random(seed);
 
 	/**
+	 * Custom parameters
+	 * Currently set to first values in enums.
+	 */
+	public static volatile Initialisation initialisation = Initialisation.AUGMENTED;
+	public static volatile Selection selection = Selection.RANDOM;
+	public static volatile Crossover crossover = Crossover.ONE_POINT;
+	public static volatile Mutation mutation = Mutation.ANNEALING;
+	public static volatile Replacement replacement = Replacement.TOURNAMENT;
+	public static volatile Activation activation = Activation.ELU;
+
+	/**
 	 * Do not change any methods that appear below here.
 	 */
-	
-	public static int getNumGenes() {					
+
+	public static int getNumGenes() {
 		return numGenes;
 	}
 
