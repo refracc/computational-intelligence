@@ -15,7 +15,8 @@ public class SimulatedAnnealing extends NeuralNetwork {
                 return (v > 0) ? v : Math.pow(Math.E, v) - 1;
             }
             case HARD_ELISH -> {
-
+                return (v < 0) ? Math.max(0, Math.min(1, (v + 1) / 2)) * (Math.pow(Math.E, v) - 1)
+                        : v * Math.max(0, Math.min(1, (v + 1) / 2));
             }
             case LEAKY_RELU -> {
             }
