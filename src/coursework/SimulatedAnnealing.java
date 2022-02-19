@@ -25,6 +25,8 @@ public class SimulatedAnnealing extends NeuralNetwork {
                 return (v > 0) ? v : -1;
             }
             case SELU -> {
+                return (v > 0) ? v * 1.0507009
+                        : 1.0507009 * (1.673263 * Math.pow(Math.E, v)) - 1.673263;
             }
             case STEP -> {
             }
