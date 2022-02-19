@@ -179,10 +179,28 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
     /**
      * Perform tournament selection on the population.
      *
-     * @return A successful individual who has won the tournament.
+     * @return An individual from the population.
      */
     private Individual tournamentSelection() {
         Collections.shuffle(population);
         return population.stream().limit(Parameters.TOURNAMENT_SIZE).max(Comparator.naturalOrder()).orElse(null);
+    }
+
+    /**
+     * Perform roulette selection on the population.
+     * Also known as Fitness-Proportionate Selection.
+     *
+     * @return An individual.
+     */
+    private Individual rouletteSelection() {
+        double sum = population.stream().mapToDouble(i -> 1 - i.fitness).sum();
+        double r = sum * Parameters.random.nextDouble();
+
+        for (Individual i : population) {
+            r -= (1 - i.fitness);
+            if (r < 0) return i;
+        }
+        // Should a rounding error occur, the last element in the population will be returned.
+        return population.get(-1);
     }
 }
