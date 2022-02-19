@@ -105,4 +105,26 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
         // Reduce the population down to the proper population size after comparison & evaluation.
         return population.stream().sorted(Individual::compareTo).limit(Parameters.populationSize).collect(Collectors.toCollection(ArrayList::new));
     }
+
+    /**
+     * Generate a population using positive/negative for the Evolutionary Algorithm.
+     *
+     * @return A randomly-initialised population.
+     */
+    private List<Individual> initialisePositiveNegative() {
+        population = new ArrayList<>();
+
+        for (int i = 0; i < Parameters.populationSize; i++) {
+            Individual i1 = new Individual();
+            Individual i2 = i1.copy();
+
+            for (int j = 0; j < i2.chromosome.length; j++) i2.chromosome[j] = (0 - i2.chromosome[j]); // Flip
+
+            i1.fitness = Fitness.evaluate(i1, this);
+            i2.fitness = Fitness.evaluate(i2, this);
+
+            population.add(i2.fitness > i1.fitness ? i1 : i2);
+        }
+        return population;
+    }
 }
