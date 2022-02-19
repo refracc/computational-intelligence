@@ -10,30 +10,8 @@ import java.util.Random;
 
 public class Parameters {
 
-	/**
-	 * These parameter values can be changed
-	 * You may add other Parameters as required to this class
-	 */
-	private static int numHidden = 5;
-	private static int numGenes = calculateNumGenes();
-
 	// Set the NeuralNetwork class here to use your code from the GUI
 	public static final Class<? extends NeuralNetwork> neuralNetworkClass = SimulatedAnnealing.class;
-	public static double maxGene = 3;
-	public static double minGene = -3; // specifies minimum and maximum weight values
-	public static int popSize = 40;
-	public static int maxEvaluations = 20000;
-
-	// Parameters for mutation
-	// Rate = probability of changing a gene
-	// Change = the maximum +/- adjustment to the gene value
-	public static double mutateRate = 0.04; // mutation rate for mutation operator
-	public static double mutateChange = 0.1; // delta change for mutation operator
-
-	//Random number generator used throughout the application
-	public static long seed = System.currentTimeMillis();
-	public static Random random = new Random(seed);
-
 	/**
 	 * Custom parameters
 	 * Currently set to first values in enums.
@@ -46,6 +24,24 @@ public class Parameters {
 	public static final Activation ACTIVATION = Activation.TANH;
 	public static final double COOLING_RATE = 0.0011d;
 	public static final double TEMPERATURE = 100000d;
+	public static double maxGene = 3;
+	public static double minGene = -3; // specifies minimum and maximum weight values
+	public static int popSize = 40;
+	public static int maxEvaluations = 20000;
+	// Parameters for mutation
+	// Rate = probability of changing a gene
+	// Change = the maximum +/- adjustment to the gene value
+	public static double mutateRate = 0.04; // mutation rate for mutation operator
+	public static double mutateChange = 0.1; // delta change for mutation operator
+	//Random number generator used throughout the application
+	public static long seed = System.currentTimeMillis();
+	public static Random random = new Random(seed);
+	/**
+	 * These parameter values can be changed
+	 * You may add other Parameters as required to this class
+	 */
+	private static int numHidden = 5;
+	private static int numGenes = calculateNumGenes();
 
 	/**
 	 * Do not change any methods that appear below here.
@@ -62,15 +58,15 @@ public class Parameters {
 	public static int getNumHidden() {
 		return numHidden;
 	}
-	
+
 	public static void setHidden(int nHidden) {
 		numHidden = nHidden;
-		numGenes = calculateNumGenes();		
+		numGenes = calculateNumGenes();
 	}
 
 	public static String printParams() {
 		StringBuilder str = new StringBuilder();
-		for(Field field : Parameters.class.getDeclaredFields()) {
+		for (Field field : Parameters.class.getDeclaredFields()) {
 			String name = field.getName();
 			Object val = null;
 			try {
@@ -84,15 +80,15 @@ public class Parameters {
 		}
 		return str.toString();
 	}
-	
-	public static void setDataSet(DataSet dataSet) {
-		LunarParameters.setDataSet(dataSet);
-	}
-	
+
 	public static DataSet getDataSet() {
 		return LunarParameters.getDataSet();
 	}
-	
+
+	public static void setDataSet(DataSet dataSet) {
+		LunarParameters.setDataSet(dataSet);
+	}
+
 	public static void main(String[] args) {
 		printParams();
 	}

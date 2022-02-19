@@ -4,28 +4,28 @@ import model.Fitness;
 import model.Individual;
 import model.NeuralNetwork;
 
-public class ExampleHillClimber extends NeuralNetwork{
+public class ExampleHillClimber extends NeuralNetwork {
 
 	public static void main(String[] args) {
 		NeuralNetwork hillClimber = new ExampleHillClimber();
 		hillClimber.run();
 	}
-	
+
 	@Override
 	public void run() {
 		//initialise a single individual
 		best = new Individual();
-		
+
 		//run for max evaluations
-		for(int gen = 0; gen < Parameters.maxEvaluations; gen++) {
+		for (int gen = 0; gen < Parameters.maxEvaluations; gen++) {
 			//mutate the best
 			Individual candidate = mutateBest();
-			
+
 			//accept if better
-			if(candidate.fitness < best.fitness) {
+			if (candidate.fitness < best.fitness) {
 				best = candidate;
 			}
-			
+
 			outputStats();
 		}
 		saveNeuralNetwork();
@@ -46,7 +46,7 @@ public class ExampleHillClimber extends NeuralNetwork{
 		return candidate;
 	}
 
-	
+
 	@Override
 	public double activationFunction(double x) {
 		if (x < -20.0) {
@@ -57,5 +57,5 @@ public class ExampleHillClimber extends NeuralNetwork{
 		return Math.tanh(x);
 	}
 
-	
+
 }
