@@ -14,7 +14,8 @@ public class Parameters {
 	 */
 	private static int numHidden = 5;
 	private static int numGenes = calculateNumGenes();
-	//set the NeuralNetwork class here to use your code from the GUI
+
+	// Set the NeuralNetwork class here to use your code from the GUI
 	public static final Class<? extends NeuralNetwork> neuralNetworkClass = ExampleEvolutionaryAlgorithm.class;
 	public static double maxGene = 3;
 	public static double minGene = -3; // specifies minimum and maximum weight values
@@ -30,10 +31,9 @@ public class Parameters {
 	//Random number generator used throughout the application
 	public static long seed = System.currentTimeMillis();
 	public static Random random = new Random(seed);
-	
+
 	/**
 	 * Do not change any methods that appear below here.
-	 * 
 	 */
 	
 	public static int getNumGenes() {					
