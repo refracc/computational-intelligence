@@ -5,10 +5,7 @@ import model.Individual;
 import model.NeuralNetwork;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -177,5 +174,15 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
     private Individual randomSelection() {
         Individual individual = population.get(Parameters.random.nextInt(Parameters.populationSize));
         return individual.copy();
+    }
+
+    /**
+     * Perform tournament selection on the population.
+     *
+     * @return A successful individual who has won the tournament.
+     */
+    private Individual tournamentSelection() {
+        Collections.shuffle(population);
+        return population.stream().limit(Parameters.TOURNAMENT_SIZE).max(Comparator.naturalOrder()).orElse(null);
     }
 }

@@ -12,9 +12,9 @@ public class Parameters {
 
 	// Set the NeuralNetwork class here to use your code from the GUI
 	public static final Class<? extends NeuralNetwork> neuralNetworkClass = SimulatedAnnealing.class;
+
 	/**
 	 * Custom parameters
-	 * Currently set to first values in enums.
 	 */
 	public static final Initialisation INITIALISATION = Initialisation.AUGMENTED;
 	public static final Selection SELECTION = Selection.RANDOM;
@@ -24,22 +24,24 @@ public class Parameters {
 	public static final Activation ACTIVATION = Activation.TANH;
 	public static final double COOLING_RATE = 0.0011d;
 	public static final double TEMPERATURE = 100000d;
+	public static final int TOURNAMENT_SIZE = 10;
+	public static final boolean IMMIGRATION = false;
+
+	// specifies minimum and maximum weight values
 	public static double maxGene = 3;
-	public static double minGene = -3; // specifies minimum and maximum weight values
+	public static double minGene = -3;
 	public static int populationSize = 40;
 	public static int maxEvaluations = 20000;
+
 	// Parameters for mutation
 	// Rate = probability of changing a gene
 	// Change = the maximum +/- adjustment to the gene value
 	public static double mutateRate = 0.04; // mutation rate for mutation operator
 	public static double mutateChange = 0.1; // delta change for mutation operator
+
 	//Random number generator used throughout the application
 	public static long seed = System.currentTimeMillis();
 	public static Random random = new Random(seed);
-	/**
-	 * These parameter values can be changed
-	 * You may add other Parameters as required to this class
-	 */
 	private static int numHidden = 5;
 	private static int numGenes = calculateNumGenes();
 
