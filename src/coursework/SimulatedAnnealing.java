@@ -46,7 +46,7 @@ public class SimulatedAnnealing extends NeuralNetwork {
             int position1 = Parameters.random.nextInt(newIndividual.chromosome.length);
             int position2 = Parameters.random.nextInt(newIndividual.chromosome.length);
 
-            // Set up swaps.
+            // Set up gene swaps
             double swap1 = newIndividual.chromosome[position1];
             double swap2 = newIndividual.chromosome[position2];
 
