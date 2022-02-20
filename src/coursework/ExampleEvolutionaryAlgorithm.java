@@ -41,7 +41,68 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
 
     @Override
     public void run() {
+        switch(Parameters.INITIALISATION) {
+            case AUGMENTED -> population = (ArrayList<Individual>) augmented();
+            case POSITIVE_NEGATIVE -> population = (ArrayList<Individual>) positiveNegative();
+            case RANDOM -> population = (ArrayList<Individual>) initialise();
+        }
 
+        best = getBestIndividual();
+
+        double temperature = Parameters.TEMPERATURE;
+        double cooling = Parameters.COOLING_RATE;
+
+        while (Parameters.maxEvaluations > evaluations) {
+            Individual i1 = new Individual();
+            Individual i2 = new Individual();
+
+            switch (Parameters.SELECTION) {
+                case RANDOM -> {
+                    i1 = random();
+                    i2 = random();
+                }
+                case ROULETTE -> {
+                    i1 = roulette();
+                    i2 = roulette();
+                }
+                case ROUTE_RANK -> {
+                    i1 = ranked();
+                    i2 = ranked();
+                }
+                case TOURNAMENT -> {
+                    i1 = tournament();
+                    i2 = tournament();
+                }
+            }
+
+            List<Individual> children = new ArrayList<>();
+            switch (Parameters.CROSSOVER) {
+                case ARITHMETIC -> children = arithmetic(i1, i2);
+                case ONE_POINT -> children = onePoint(i1, i2);
+                case TWO_POINT -> children = twoPoint(i1, i2);
+                case UNIFORM -> children = uniform(i1, i2);
+            }
+
+            switch(Parameters.MUTATION) {
+                case ANNEALING -> {
+                    annealing(children, temperature);
+                    temperature *= (1 - cooling);
+                }
+                case CONSTRAINED -> constrained(children);
+                case STANDARD -> mutate(children);
+            }
+
+            evaluatePopulation(children);
+
+            switch (Parameters.REPLACEMENT) {
+                case TOURNAMENT -> tournament(children);
+                case WORST -> worst(children);
+            }
+
+            best = getBestIndividual();
+            outputStats();
+        }
+        saveNeuralNetwork();
     }
 
     /**
