@@ -412,4 +412,53 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
             if (Parameters.random.nextDouble() <= acceptance(fitness, neighbouringFitness, temperature)) individual = i;
         }
     }
+
+    /* ********************************** */
+    /* ********** REPLACEMENT *********** */
+    /* ********************************** */
+
+    /**
+     * Perform tournament replacement on a population.
+     * @param population The population of individuals.
+     */
+    private void tournament(@NotNull List<Individual> population) {
+        for (Individual individual : population) {
+            Collections.shuffle(population);
+            Individual worst = population.stream().limit(Parameters.TOURNAMENT_SIZE).max(Comparator.naturalOrder()).orElse(null);
+
+            population.remove(worst);
+            population.add(individual);
+        }
+    }
+
+    /**
+     * Helper function to find the index of the worst performing individual in the population.
+     */
+    private int getWorstIndex() {
+        Individual worst = null;
+        int index = -1;
+
+        for (int i = 0; i < population.size(); i++) {
+            Individual individual = population.get(i);
+
+            if ((worst == null) || (worst.fitness < individual.fitness)) {
+                worst = individual;
+                index = i;
+            }
+        }
+        return index;
+    }
+
+    /**
+     * Find the worst performing individual within a population and have it replaced.
+     * @param population The population of individuals.
+     */
+    private void worst(@NotNull List<Individual> population) {
+        for (Individual individual : population) {
+            int index = getWorstIndex();
+            population.set(index, individual);
+        }
+    }
+
+
 }
