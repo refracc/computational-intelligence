@@ -4,6 +4,7 @@ import coursework.utility.Helpers;
 import model.Fitness;
 import model.Individual;
 import model.NeuralNetwork;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
 
@@ -325,5 +326,90 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
         });
 
         return Collections.singletonList(individual);
+    }
+
+    /* ********************************** */
+    /* *********** MUTATION ************* */
+    /* ********************************** */
+
+    /**
+     * Perform mutation among a population of individuals.
+     * @param population The population to have mutation applied to it.
+     */
+    private void mutate(@NotNull List<Individual> population) {
+        population.forEach(individual -> IntStream.range(0, individual.chromosome.length).forEach(i -> {
+            if (Parameters.random.nextDouble() < Parameters.mutateRate) {
+                individual.chromosome[i] = (Parameters.random.nextBoolean())
+                        ? individual.chromosome[i] + Parameters.mutateRate
+                        : individual.chromosome[i] - Parameters.mutateRate;
+            }
+        }));
+    }
+
+    /**
+     * Perform constrained mutation among a population of individuals.
+     * @param population The population to have constrained mutation applied to it.
+     */
+    private void constrained(@NotNull List<Individual> population) {
+        population.forEach(individual -> IntStream.range(0, individual.chromosome.length).forEach(i -> {
+            if (Parameters.random.nextDouble() < Parameters.mutateRate) {
+                if (Parameters.random.nextBoolean()) {
+                    double prior = individual.fitness;
+                    individual.chromosome[i] += Parameters.mutateChange;
+                    individual.fitness = Fitness.evaluate(individual, this);
+
+                    individual.chromosome[i] = (individual.fitness > prior)
+                            ? individual.chromosome[i] - Parameters.mutateChange
+                            : individual.chromosome[i]; // Revert if a bad choice was made.
+                } else {
+                    double prior = individual.fitness;
+                    individual.chromosome[i] -= (Parameters.mutateChange);
+                    individual.fitness = Fitness.evaluate(individual, this);
+
+                    individual.chromosome[i] = (individual.fitness > prior)
+                            ? individual.chromosome[i] + Parameters.mutateChange
+                            : individual.chromosome[i]; // Revert if a bad choice was made.
+                }
+            }
+        }));
+    }
+
+    /**
+     * The acceptance probability for taking a new solution.
+     * @param currentFitness The current fitness value for comparison.
+     * @param newFitness The new fitness value for comparison.
+     * @param temperature The temperature value for comparison.
+     * @return Either a 100% acceptance, or some value {@code 0 <= x <= 1}.
+     */
+    private double acceptance(double currentFitness, double newFitness, double temperature) {
+        return (newFitness < currentFitness) ? 1.0d : Math.exp((currentFitness - newFitness) / temperature);
+    }
+
+    /**
+     * Mutate the population with inspiration from SimulatedAnnealing.
+     * @param population The population to mutate.
+     * @param temperature The temperature.
+     */
+    @Contract(pure = true)
+    private void annealing(@NotNull List<Individual> population, double temperature) {
+        for (Individual individual : population) {
+            Individual i = individual.copy();
+
+            int pos1 = (int) (i.chromosome.length * Parameters.random.nextDouble());
+            int pos2 = (int) (i.chromosome.length * Parameters.random.nextDouble());
+
+            double swap1 = i.chromosome[pos1];
+            double swap2 = i.chromosome[pos2];
+
+            i.chromosome[pos1] = swap2;
+            i.chromosome[pos2] = swap1;
+
+            i.fitness = Fitness.evaluate(i, this);
+
+            double fitness = individual.fitness;
+            double neighbouringFitness = i.fitness;
+
+            if (Parameters.random.nextDouble() <= acceptance(fitness, neighbouringFitness, temperature)) individual = i;
+        }
     }
 }
