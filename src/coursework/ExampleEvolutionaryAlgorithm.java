@@ -42,9 +42,9 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
     @Override
     public void run() {
         switch(Parameters.INITIALISATION) {
-            case AUGMENTED -> population = (ArrayList<Individual>) augmented();
-            case POSITIVE_NEGATIVE -> population = (ArrayList<Individual>) positiveNegative();
-            case RANDOM -> population = (ArrayList<Individual>) initialise();
+            case AUGMENTED -> population = augmented();
+            case POSITIVE_NEGATIVE -> population = positiveNegative();
+            case RANDOM -> population = initialise();
         }
 
         best = getBestIndividual();
@@ -75,7 +75,7 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
                 }
             }
 
-            List<Individual> children = new ArrayList<>();
+            ArrayList<Individual> children = new ArrayList<>();
             switch (Parameters.CROSSOVER) {
                 case ARITHMETIC -> children = arithmetic(i1, i2);
                 case ONE_POINT -> children = onePoint(i1, i2);
@@ -110,7 +110,7 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
      *
      * @param individuals The list of individuals (population) to evaluate.
      */
-    private void evaluatePopulation(@NotNull List<Individual> individuals) {
+    private void evaluatePopulation(@NotNull ArrayList<Individual> individuals) {
         for (Individual i : individuals) {
             i.fitness = Fitness.evaluate(i, this);
         }
@@ -122,10 +122,10 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
      * @return The best performing individual.
      */
     private Individual getBestIndividual() {
-        best = null;
+        best = random();
         for (Individual i : population) {
             if (best.fitness > i.fitness) {
-                best = i.copy();
+                best = i;
             }
         }
 
@@ -141,7 +141,7 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
      *
      * @return A randomly-initialised population.
      */
-    private List<Individual> initialise() {
+    private ArrayList<Individual> initialise() {
         population = new ArrayList<>();
 
         // Create new population
@@ -161,7 +161,7 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
      *
      * @return A randomly-initialised population.
      */
-    private List<Individual> augmented() {
+    private ArrayList<Individual> augmented() {
         population = new ArrayList<>();
 
         IntStream.range(0, Parameters.populationSize + 5000).mapToObj(i -> new Individual()).forEach(individual -> population.add(individual));
@@ -177,7 +177,7 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
      *
      * @return A randomly-initialised population.
      */
-    private List<Individual> positiveNegative() {
+    private ArrayList<Individual> positiveNegative() {
         population = new ArrayList<>();
 
         for (int i = 0; i < Parameters.populationSize; i++) {
@@ -193,37 +193,6 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
             population.add(i2.fitness > i1.fitness ? i1 : i2);
         }
         return population;
-    }
-
-    /**
-     * Generate part of a randomly-initialised population for the Evolutionary Algorithm.
-     */
-    private void partially() {
-        Individual individual;
-        population.sort(Comparator.reverseOrder());
-
-        for (int i = 0; i < 15; i++) {
-            individual = new Individual();
-            population.remove(0);
-            population.add(individual);
-        }
-        evaluatePopulation(population);
-    }
-
-    /**
-     * Keep the best N individuals of a population for evaluation.
-     *
-     * @param n The number of individuals to keep.
-     */
-    private void keepBestNIndividuals(int n) {
-        population.sort(Comparator.reverseOrder());
-
-        IntStream.range(0, Parameters.populationSize - n).mapToObj(i -> new Individual()).forEach(individual -> {
-            population.remove(0);
-            population.add(individual);
-        });
-
-        evaluatePopulation(population);
     }
 
     /* ********************************** */
@@ -269,22 +238,6 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
     }
 
     /**
-     * Get an individual based on Ranked Fitness Proportionate.
-     * @return The last individual in the list (if the for)
-     */
-    private Individual oldRanked() {
-        population.sort(Comparator.reverseOrder());
-
-        int random = Parameters.random.nextInt(Parameters.populationSize);
-        for (int i = 0; i < Parameters.populationSize; i++) {
-            random--;
-            if (i > random) return population.get(i);
-        }
-
-        return population.get(-1);
-    }
-
-    /**
      * Get an individual by using Ranked Selection
      * @return An individual
      */
@@ -301,11 +254,12 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
 
     /**
      * Perform uniform crossover between 2 individuals.
+     *
      * @param individual1 The first parent.
      * @param individual2 The second parent.
      * @return The new children post-crossover.
      */
-    private @NotNull List<Individual> uniform(@NotNull Individual individual1, @NotNull Individual individual2) {
+    private @NotNull ArrayList<Individual> uniform(@NotNull Individual individual1, @NotNull Individual individual2) {
         Individual i1 = new Individual();
         Individual i2 = new Individual();
 
@@ -319,16 +273,17 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
             }
         });
 
-        return Arrays.asList(i1, i2);
+        return new ArrayList<>(Arrays.asList(i1, i2));
     }
 
     /**
      * Perform one-point crossover between 2 individuals.
+     *
      * @param individual1 The first parent.
      * @param individual2 The second parent.
      * @return The new children post-crossover.
      */
-    private @NotNull List<Individual> onePoint(@NotNull Individual individual1, @NotNull Individual individual2) {
+    private @NotNull ArrayList<Individual> onePoint(@NotNull Individual individual1, @NotNull Individual individual2) {
         Individual i1 = new Individual();
         Individual i2 = new Individual();
 
@@ -344,16 +299,17 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
             }
         });
 
-        return Arrays.asList(i1, i2);
+        return new ArrayList<>(Arrays.asList(i1, i2));
     }
 
     /**
      * Perform two-point crossover between 2 individuals.
+     *
      * @param individual1 The first parent.
      * @param individual2 The second parent.
      * @return The new children post-crossover.
      */
-    private @NotNull List<Individual> twoPoint(@NotNull Individual individual1, @NotNull Individual individual2) {
+    private @NotNull ArrayList<Individual> twoPoint(@NotNull Individual individual1, @NotNull Individual individual2) {
         Individual i1 = new Individual();
         Individual i2 = new Individual();
         int cut1 = Parameters.random.nextInt(i1.chromosome.length);
@@ -369,24 +325,25 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
             }
         });
 
-        return Arrays.asList(i1, i2);
+        return new ArrayList<>(Arrays.asList(i1, i2));
     }
 
     /**
      * Perform arithmetic crossover between 2 individuals.
+     *
      * @param individual1 The first parent.
      * @param individual2 The second parent.
      * @return The new children post-crossover.
      */
-    private @NotNull @Unmodifiable List<Individual> arithmetic(@NotNull Individual individual1, @NotNull Individual individual2) {
+    private @NotNull @Unmodifiable ArrayList<Individual> arithmetic(@NotNull Individual individual1, @NotNull Individual individual2) {
         Individual individual = new Individual();
 
         IntStream.range(0, individual1.chromosome.length).forEach(i -> {
-           double average = (individual1.chromosome[i] + individual2.chromosome[i]) / 2;
-           individual.chromosome[i] = average;
+            double average = (individual1.chromosome[i] + individual2.chromosome[i]) / 2;
+            individual.chromosome[i] = average;
         });
 
-        return Collections.singletonList(individual);
+        return new ArrayList<>(Collections.singletonList(individual));
     }
 
     /* ********************************** */
@@ -395,9 +352,10 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
 
     /**
      * Perform mutation among a population of individuals.
+     *
      * @param population The population to have mutation applied to it.
      */
-    private void mutate(@NotNull List<Individual> population) {
+    private void mutate(@NotNull ArrayList<Individual> population) {
         population.forEach(individual -> IntStream.range(0, individual.chromosome.length).forEach(i -> {
             if (Parameters.random.nextDouble() < Parameters.mutateRate) {
                 individual.chromosome[i] = (Parameters.random.nextBoolean())
@@ -409,9 +367,10 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
 
     /**
      * Perform constrained mutation among a population of individuals.
+     *
      * @param population The population to have constrained mutation applied to it.
      */
-    private void constrained(@NotNull List<Individual> population) {
+    private void constrained(@NotNull ArrayList<Individual> population) {
         population.forEach(individual -> IntStream.range(0, individual.chromosome.length).forEach(i -> {
             if (Parameters.random.nextDouble() < Parameters.mutateRate) {
                 if (Parameters.random.nextBoolean()) {
@@ -448,11 +407,12 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
 
     /**
      * Mutate the population with inspiration from SimulatedAnnealing.
-     * @param population The population to mutate.
+     *
+     * @param population  The population to mutate.
      * @param temperature The temperature.
      */
     @Contract(pure = true)
-    private void annealing(@NotNull List<Individual> population, double temperature) {
+    private void annealing(@NotNull ArrayList<Individual> population, double temperature) {
         for (Individual individual : population) {
             Individual i = individual.copy();
 
@@ -480,15 +440,17 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
 
     /**
      * Perform tournament replacement on a population.
+     *
      * @param population The population of individuals.
      */
-    private void tournament(@NotNull List<Individual> population) {
-        for (Individual individual : population) {
+    private void tournament(@NotNull ArrayList<Individual> population) {
+        for (int i = 0; i < population.size(); i++) {
             Collections.shuffle(population);
+            Individual ind = population.get(i);
             Individual worst = population.stream().limit(Parameters.TOURNAMENT_SIZE).max(Comparator.naturalOrder()).orElse(null);
 
-            population.remove(worst);
-            population.add(individual);
+            population.removeAll(List.of(Objects.requireNonNull(worst)));
+            population.add(ind);
         }
     }
 
@@ -512,9 +474,10 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
 
     /**
      * Find the worst performing individual within a population and have it replaced.
+     *
      * @param population The population of individuals.
      */
-    private void worst(@NotNull List<Individual> population) {
+    private void worst(@NotNull ArrayList<Individual> population) {
         for (Individual individual : population) {
             int index = getWorstIndex();
             population.set(index, individual);

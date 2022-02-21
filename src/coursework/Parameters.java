@@ -25,7 +25,6 @@ public class Parameters {
 	public static final double COOLING_RATE = 0.0011d;
 	public static final double TEMPERATURE = 100000d;
 	public static final int TOURNAMENT_SIZE = 10;
-	public static final boolean IMMIGRATION = false;
 
 	// specifies minimum and maximum weight values
 	public static double maxGene = 3;
