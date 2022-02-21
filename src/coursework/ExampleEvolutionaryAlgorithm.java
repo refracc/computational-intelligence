@@ -1,9 +1,12 @@
 package coursework;
 
+import coursework.utility.Helpers;
 import model.Fitness;
 import model.Individual;
 import model.NeuralNetwork;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -38,7 +41,68 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
 
     @Override
     public void run() {
+        switch(Parameters.INITIALISATION) {
+            case AUGMENTED -> population = (ArrayList<Individual>) augmented();
+            case POSITIVE_NEGATIVE -> population = (ArrayList<Individual>) positiveNegative();
+            case RANDOM -> population = (ArrayList<Individual>) initialise();
+        }
 
+        best = getBestIndividual();
+
+        double temperature = Parameters.TEMPERATURE;
+        double cooling = Parameters.COOLING_RATE;
+
+        while (Parameters.maxEvaluations > evaluations) {
+            Individual i1 = new Individual();
+            Individual i2 = new Individual();
+
+            switch (Parameters.SELECTION) {
+                case RANDOM -> {
+                    i1 = random();
+                    i2 = random();
+                }
+                case ROULETTE -> {
+                    i1 = roulette();
+                    i2 = roulette();
+                }
+                case ROUTE_RANK -> {
+                    i1 = ranked();
+                    i2 = ranked();
+                }
+                case TOURNAMENT -> {
+                    i1 = tournament();
+                    i2 = tournament();
+                }
+            }
+
+            List<Individual> children = new ArrayList<>();
+            switch (Parameters.CROSSOVER) {
+                case ARITHMETIC -> children = arithmetic(i1, i2);
+                case ONE_POINT -> children = onePoint(i1, i2);
+                case TWO_POINT -> children = twoPoint(i1, i2);
+                case UNIFORM -> children = uniform(i1, i2);
+            }
+
+            switch(Parameters.MUTATION) {
+                case ANNEALING -> {
+                    annealing(children, temperature);
+                    temperature *= (1 - cooling);
+                }
+                case CONSTRAINED -> constrained(children);
+                case STANDARD -> mutate(children);
+            }
+
+            evaluatePopulation(children);
+
+            switch (Parameters.REPLACEMENT) {
+                case TOURNAMENT -> tournament(children);
+                case WORST -> worst(children);
+            }
+
+            best = getBestIndividual();
+            outputStats();
+        }
+        saveNeuralNetwork();
     }
 
     /**
@@ -97,7 +161,7 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
      *
      * @return A randomly-initialised population.
      */
-    private List<Individual> initialiseAugmented() {
+    private List<Individual> augmented() {
         population = new ArrayList<>();
 
         IntStream.range(0, Parameters.populationSize + 5000).mapToObj(i -> new Individual()).forEach(individual -> population.add(individual));
@@ -113,7 +177,7 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
      *
      * @return A randomly-initialised population.
      */
-    private List<Individual> initialisePositiveNegative() {
+    private List<Individual> positiveNegative() {
         population = new ArrayList<>();
 
         for (int i = 0; i < Parameters.populationSize; i++) {
@@ -134,7 +198,7 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
     /**
      * Generate part of a randomly-initialised population for the Evolutionary Algorithm.
      */
-    private void initialisePartially() {
+    private void partially() {
         Individual individual;
         population.sort(Comparator.reverseOrder());
 
@@ -171,7 +235,7 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
      *
      * @return A random individual from the population.
      */
-    private Individual randomSelection() {
+    private Individual random() {
         Individual individual = population.get(Parameters.random.nextInt(Parameters.populationSize));
         return individual.copy();
     }
@@ -181,7 +245,7 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
      *
      * @return An individual from the population.
      */
-    private Individual tournamentSelection() {
+    private Individual tournament() {
         Collections.shuffle(population);
         return population.stream().limit(Parameters.TOURNAMENT_SIZE).max(Comparator.naturalOrder()).orElse(null);
     }
@@ -192,7 +256,7 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
      *
      * @return An individual.
      */
-    private Individual rouletteSelection() {
+    private Individual roulette() {
         double sum = population.stream().mapToDouble(i -> 1 - i.fitness).sum();
         double r = sum * Parameters.random.nextDouble();
 
@@ -203,4 +267,259 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
         // Should a rounding error occur, the last element in the population will be returned.
         return population.get(-1);
     }
+
+    /**
+     * Get an individual based on Ranked Fitness Proportionate.
+     * @return The last individual in the list (if the for)
+     */
+    private Individual oldRanked() {
+        population.sort(Comparator.reverseOrder());
+
+        int random = Parameters.random.nextInt(Parameters.populationSize);
+        for (int i = 0; i < Parameters.populationSize; i++) {
+            random--;
+            if (i > random) return population.get(i);
+        }
+
+        return population.get(-1);
+    }
+
+    /**
+     * Get an individual by using Ranked Selection
+     * @return An individual
+     */
+    private Individual ranked() {
+        double[] fitness = IntStream.range(0, Parameters.populationSize).mapToDouble(i -> i + 1).toArray();
+
+        Helpers.unitize1(fitness);
+        return population.get(Helpers.random(fitness));
+    }
+
+    /* ********************************** */
+    /* *********** CROSSOVER ************ */
+    /* ********************************** */
+
+    /**
+     * Perform uniform crossover between 2 individuals.
+     * @param individual1 The first parent.
+     * @param individual2 The second parent.
+     * @return The new children post-crossover.
+     */
+    private @NotNull List<Individual> uniform(@NotNull Individual individual1, @NotNull Individual individual2) {
+        Individual i1 = new Individual();
+        Individual i2 = new Individual();
+
+        IntStream.range(0, individual1.chromosome.length).forEach(i -> {
+            if (Parameters.random.nextBoolean()) {
+                i1.chromosome[i] = individual1.chromosome[i];
+                i2.chromosome[i] = individual2.chromosome[i];
+            } else {
+                i1.chromosome[i] = individual2.chromosome[i];
+                i2.chromosome[i] = individual1.chromosome[i];
+            }
+        });
+
+        return Arrays.asList(i1, i2);
+    }
+
+    /**
+     * Perform one-point crossover between 2 individuals.
+     * @param individual1 The first parent.
+     * @param individual2 The second parent.
+     * @return The new children post-crossover.
+     */
+    private @NotNull List<Individual> onePoint(@NotNull Individual individual1, @NotNull Individual individual2) {
+        Individual i1 = new Individual();
+        Individual i2 = new Individual();
+
+        int cut = Parameters.random.nextInt(i1.chromosome.length);
+
+        IntStream.range(0, individual1.chromosome.length).forEach(i -> {
+            if (i < cut) {
+                i1.chromosome[i] = individual1.chromosome[i];
+                i2.chromosome[i] = individual2.chromosome[i];
+            } else {
+                i1.chromosome[i] = individual2.chromosome[i];
+                i2.chromosome[i] = individual1.chromosome[i];
+            }
+        });
+
+        return Arrays.asList(i1, i2);
+    }
+
+    /**
+     * Perform two-point crossover between 2 individuals.
+     * @param individual1 The first parent.
+     * @param individual2 The second parent.
+     * @return The new children post-crossover.
+     */
+    private @NotNull List<Individual> twoPoint(@NotNull Individual individual1, @NotNull Individual individual2) {
+        Individual i1 = new Individual();
+        Individual i2 = new Individual();
+        int cut1 = Parameters.random.nextInt(i1.chromosome.length);
+        int cut2 = Parameters.random.nextInt(i1.chromosome.length);
+
+        IntStream.range(0, individual1.chromosome.length).forEach(i -> {
+            if ((i < cut1) || (i >= cut2)) {
+                i1.chromosome[i] = individual1.chromosome[i];
+                i2.chromosome[i] = individual2.chromosome[i];
+            } else {
+                i1.chromosome[i] = individual2.chromosome[i];
+                i2.chromosome[i] = individual1.chromosome[i];
+            }
+        });
+
+        return Arrays.asList(i1, i2);
+    }
+
+    /**
+     * Perform arithmetic crossover between 2 individuals.
+     * @param individual1 The first parent.
+     * @param individual2 The second parent.
+     * @return The new children post-crossover.
+     */
+    private @NotNull @Unmodifiable List<Individual> arithmetic(@NotNull Individual individual1, @NotNull Individual individual2) {
+        Individual individual = new Individual();
+
+        IntStream.range(0, individual1.chromosome.length).forEach(i -> {
+           double average = (individual1.chromosome[i] + individual2.chromosome[i]) / 2;
+           individual.chromosome[i] = average;
+        });
+
+        return Collections.singletonList(individual);
+    }
+
+    /* ********************************** */
+    /* *********** MUTATION ************* */
+    /* ********************************** */
+
+    /**
+     * Perform mutation among a population of individuals.
+     * @param population The population to have mutation applied to it.
+     */
+    private void mutate(@NotNull List<Individual> population) {
+        population.forEach(individual -> IntStream.range(0, individual.chromosome.length).forEach(i -> {
+            if (Parameters.random.nextDouble() < Parameters.mutateRate) {
+                individual.chromosome[i] = (Parameters.random.nextBoolean())
+                        ? individual.chromosome[i] + Parameters.mutateRate
+                        : individual.chromosome[i] - Parameters.mutateRate;
+            }
+        }));
+    }
+
+    /**
+     * Perform constrained mutation among a population of individuals.
+     * @param population The population to have constrained mutation applied to it.
+     */
+    private void constrained(@NotNull List<Individual> population) {
+        population.forEach(individual -> IntStream.range(0, individual.chromosome.length).forEach(i -> {
+            if (Parameters.random.nextDouble() < Parameters.mutateRate) {
+                if (Parameters.random.nextBoolean()) {
+                    double prior = individual.fitness;
+                    individual.chromosome[i] += Parameters.mutateChange;
+                    individual.fitness = Fitness.evaluate(individual, this);
+
+                    individual.chromosome[i] = (individual.fitness > prior)
+                            ? individual.chromosome[i] - Parameters.mutateChange
+                            : individual.chromosome[i]; // Revert if a bad choice was made.
+                } else {
+                    double prior = individual.fitness;
+                    individual.chromosome[i] -= (Parameters.mutateChange);
+                    individual.fitness = Fitness.evaluate(individual, this);
+
+                    individual.chromosome[i] = (individual.fitness > prior)
+                            ? individual.chromosome[i] + Parameters.mutateChange
+                            : individual.chromosome[i]; // Revert if a bad choice was made.
+                }
+            }
+        }));
+    }
+
+    /**
+     * The acceptance probability for taking a new solution.
+     * @param currentFitness The current fitness value for comparison.
+     * @param newFitness The new fitness value for comparison.
+     * @param temperature The temperature value for comparison.
+     * @return Either a 100% acceptance, or some value {@code 0 <= x <= 1}.
+     */
+    private double acceptance(double currentFitness, double newFitness, double temperature) {
+        return (newFitness < currentFitness) ? 1.0d : Math.exp((currentFitness - newFitness) / temperature);
+    }
+
+    /**
+     * Mutate the population with inspiration from SimulatedAnnealing.
+     * @param population The population to mutate.
+     * @param temperature The temperature.
+     */
+    @Contract(pure = true)
+    private void annealing(@NotNull List<Individual> population, double temperature) {
+        for (Individual individual : population) {
+            Individual i = individual.copy();
+
+            int pos1 = (int) (i.chromosome.length * Parameters.random.nextDouble());
+            int pos2 = (int) (i.chromosome.length * Parameters.random.nextDouble());
+
+            double swap1 = i.chromosome[pos1];
+            double swap2 = i.chromosome[pos2];
+
+            i.chromosome[pos1] = swap2;
+            i.chromosome[pos2] = swap1;
+
+            i.fitness = Fitness.evaluate(i, this);
+
+            double fitness = individual.fitness;
+            double neighbouringFitness = i.fitness;
+
+            if (Parameters.random.nextDouble() <= acceptance(fitness, neighbouringFitness, temperature)) individual = i;
+        }
+    }
+
+    /* ********************************** */
+    /* ********** REPLACEMENT *********** */
+    /* ********************************** */
+
+    /**
+     * Perform tournament replacement on a population.
+     * @param population The population of individuals.
+     */
+    private void tournament(@NotNull List<Individual> population) {
+        for (Individual individual : population) {
+            Collections.shuffle(population);
+            Individual worst = population.stream().limit(Parameters.TOURNAMENT_SIZE).max(Comparator.naturalOrder()).orElse(null);
+
+            population.remove(worst);
+            population.add(individual);
+        }
+    }
+
+    /**
+     * Helper function to find the index of the worst performing individual in the population.
+     */
+    private int getWorstIndex() {
+        Individual worst = null;
+        int index = -1;
+
+        for (int i = 0; i < population.size(); i++) {
+            Individual individual = population.get(i);
+
+            if ((worst == null) || (worst.fitness < individual.fitness)) {
+                worst = individual;
+                index = i;
+            }
+        }
+        return index;
+    }
+
+    /**
+     * Find the worst performing individual within a population and have it replaced.
+     * @param population The population of individuals.
+     */
+    private void worst(@NotNull List<Individual> population) {
+        for (Individual individual : population) {
+            int index = getWorstIndex();
+            population.set(index, individual);
+        }
+    }
+
+
 }
