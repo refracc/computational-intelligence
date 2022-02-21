@@ -1,9 +1,9 @@
 package coursework
 
 import coursework.utility.Helpers
-import model.NeuralNetwork
-import model.Individual
 import model.Fitness
+import model.Individual
+import model.NeuralNetwork
 import kotlin.math.exp
 
 /**
