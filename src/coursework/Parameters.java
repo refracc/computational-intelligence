@@ -16,7 +16,7 @@ public class Parameters {
     /**
      * Custom parameters
      */
-    public static final Initialisation INITIALISATION = Initialisation.POSITIVE_NEGATIVE;
+    public static final Initialisation INITIALISATION = Initialisation.AUGMENTED;
     public static final Selection SELECTION = Selection.TOURNAMENT;
     public static final Crossover CROSSOVER = Crossover.TWO_POINT;
     public static final Mutation MUTATION = Mutation.STANDARD;
@@ -30,7 +30,7 @@ public class Parameters {
     public static double maxGene = 3;
     public static double minGene = -3;
     public static int populationSize = 50;
-    public static int maxEvaluations = 20000;
+    public static int maxEvaluations = 50000;
 
     // Parameters for mutation
     // Rate = probability of changing a gene
