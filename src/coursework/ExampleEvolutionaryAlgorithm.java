@@ -186,32 +186,37 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
         return population;
     }
 
+    /* ******************************* */
+    /* ********** SELECTION ********** */
+    /* ******************************* */
+
     /**
-     * SELECTION
+     * Use random selection to get an {@link Individual} from the population.
+     * @return An {@link Individual}.
      */
     private Individual random() {
         Individual parent = population.get(Parameters.random.nextInt(Parameters.populationSize));
         return parent.copy();
     }
 
+    /**
+     * Use tournament selection to get an {@link Individual} from the population.
+     * This function also makes use of Elitism, by copying the (or some of the)
+     * best chromosomes from the current population to the new population.
+     * (1). Select k solutions at random from the population.
+     * (2). Select the best of these k solutions to be parents.
+     * @return An {@link Individual} from the population.
+     */
     private Individual tournament() {
-        /*
-          Elitism - copy the best chromosome (or a few best chromosomes) to new population
-          (happens if tournament size is equal to total pop size)
-          1 - Pick t solutions completely at random from the population
-          2 - Select the best of the t solutions to be a parent
-         */
         final int tournament = Parameters.TOURNAMENT_SIZE;
-
         Collections.shuffle(population);
-        Individual parent = population
-                .stream()
-                .limit(tournament).min(Comparator.naturalOrder())
-                .orElse(null);
-        return parent;
+        return population.stream().limit(tournament).min(Comparator.naturalOrder()).orElse(null);
     }
 
-    // Fitness proportionate selection - roulette wheel selection
+    /**
+     * Use fitness-proportionate selection to obtain an {@link Individual} from the population.
+     * @return An {@link Individual} from the population.
+     */
     private Individual roulette() {
         // calculate the total weight
         double weightSum = 0.0;
