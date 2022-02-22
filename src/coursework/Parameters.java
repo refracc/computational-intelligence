@@ -16,7 +16,7 @@ public class Parameters {
     /**
      * Custom parameters
      */
-    public static final Initialisation INITIALISATION = Initialisation.AUGMENTED;
+    public static final Initialisation INITIALISATION = Initialisation.POSITIVE_NEGATIVE;
     public static final Selection SELECTION = Selection.TOURNAMENT;
     public static final Crossover CROSSOVER = Crossover.TWO_POINT;
     public static final Mutation MUTATION = Mutation.STANDARD;

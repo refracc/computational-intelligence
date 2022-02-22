@@ -7,6 +7,7 @@ import model.NeuralNetwork;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.stream.Collectors;
@@ -19,7 +20,7 @@ import java.util.stream.IntStream;
  */
 public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
 
-    private static double acceptanceProbability(double energy, double newEnergy, double temperature) {
+    private static double acceptance(double energy, double newEnergy, double temperature) {
         // If the new solution is better, accept it
         if (newEnergy < energy) {
             return 1.0;
@@ -42,14 +43,14 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
     @Override
     public void run() {
 
-        //Initialise a population of Individuals with random weights
+        // Initialise a population of Individuals with random weights
         switch (Parameters.INITIALISATION) {
-            case AUGMENTED -> population = augmentedInitialise();
-            case POSITIVE_NEGATIVE -> population = PosNegInitialise();
+            case AUGMENTED -> population = augmented();
+            case POSITIVE_NEGATIVE -> population = positiveNegative();
             case RANDOM, default -> population = initialise();
         }
 
-        best = getBest();
+        best = getBestIndividual();
 
         // Set initial temp, cooling rate, and improvement count
         double temp = Parameters.TEMPERATURE/10;
@@ -64,161 +65,154 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
 
             switch (Parameters.SELECTION) {
                 case TOURNAMENT, default -> {
-                    parent1 = tournamentSelect();
-                    parent2 = tournamentSelect();
+                    parent1 = tournament();
+                    parent2 = tournament();
                 }
                 case ROULETTE -> {
-                    parent1 = rouletteSelect();
-                    parent2 = rouletteSelect();
+                    parent1 = roulette();
+                    parent2 = roulette();
                 }
                 case ROUTE_RANK -> {
-                    parent1 = rankSelect();
-                    parent2 = rankSelect();
+                    parent1 = rankRoutes();
+                    parent2 = rankRoutes();
                 }
                 case RANDOM -> {
-                    parent1 = randSelect();
-                    parent2 = randSelect();
+                    parent1 = random();
+                    parent2 = random();
                 }
             }
 
 
             // Generate children by crossover
             ArrayList<Individual> children = switch (Parameters.CROSSOVER) {
-                case ARITHMETIC -> arithmeticCrossover(parent1, parent2);
-                case ONE_POINT -> onePointCrossover(parent1, parent2);
-                case TWO_POINT -> twoPointCrossover(parent1, parent2);
-                case UNIFORM -> uniformCrossover(parent1, parent2);
+                case ARITHMETIC -> arithmetic(parent1, parent2);
+                case ONE_POINT -> onePoint(parent1, parent2);
+                case TWO_POINT -> twoPoint(parent1, parent2);
+                case UNIFORM -> uniform(parent1, parent2);
             };
 
             //mutate the offspring
             switch (Parameters.MUTATION) {
                 case ANNEALING -> {
-                    mutateAnnealing(children, temp);
+                    annealing(children, temp);
                     temp *= 1 - coolingRate;
                 }
-                case CONSTRAINED -> constrainedMutation(children);
+                case CONSTRAINED -> constrained(children);
                 case STANDARD, default -> mutate(children);
             }
 
             // Evaluate the children
-            evaluateIndividuals(children);
+            evaluate(children);
 
             // Replace children in population
             switch (Parameters.REPLACEMENT) {
-                case TOURNAMENT, default -> tournamentReplace(children);
-                case WORST -> replaceWorst(children);
+                case TOURNAMENT, default -> tournament(children);
+                case WORST -> worst(children);
             }
-            best = getBest();
+            best = getBestIndividual();
             outputStats();
         }
 
-        saveNeuralNetwork();  // save the trained network to disk
+        saveNeuralNetwork();
     }
 
     /**
-     * Sets the fitness of the individuals passed as parameters (whole population)
+     * Evaluate the fitness of the population one by one.
+     * @param individuals The population
      */
-    private void evaluateIndividuals(ArrayList<Individual> individuals) {
-        for (Individual individual : individuals) {
+    private void evaluate(@NotNull ArrayList<Individual> individuals) {
+        for (Individual individual : individuals)
             individual.fitness = Fitness.evaluate(individual, this);
-        }
     }
 
     /**
-     * Returns a copy of the best individual in the population
+     * Obtain the best (the lowest fitness) {@link Individual} from the current population.
+     * @return The best individual
      */
-    private Individual getBest() {
+    private Individual getBestIndividual() {
         best = null;
-        for (Individual individual : population) {
-            if (best == null) {
-                best = individual.copy();
-            } else if (individual.fitness < best.fitness) {
-                best = individual.copy();
-            }
-        }
+        population.stream().filter(individual -> best == null || individual.fitness < best.fitness)
+                .forEachOrdered(individual -> best = individual.copy());
         return best;
     }
 
+    /* ******************************* */
+    /* ******** INITIALISATION ******* */
+    /* ******************************* */
+
     /**
-     * INITIALISATION. Generates a randomly initialised population
+     * Initialise the population with a pseudo-random set of {@link Individual}s.
+     * @return An array of {@link Individual}s.
      */
     private ArrayList<Individual> initialise() {
         population = new ArrayList<>();
-        for (int i = 0; i < Parameters.populationSize; ++i) {
-            // chromosome weights are initialised randomly in the constructor
-            Individual individual = new Individual();
-            population.add(individual);
-        }
-        evaluateIndividuals(population);
+        IntStream.range(0, Parameters.populationSize)
+                .mapToObj(i -> new Individual()).forEachOrdered(individual -> population.add(individual));
+        evaluate(population);
         return population;
     }
 
-    private ArrayList<Individual> augmentedInitialise() {
+    /**
+     * Create a larger population than the original population size and condense it down
+     * to a more appropriate population size.
+     *
+     * @return An array of {@link Individual}s.
+     */
+    private ArrayList<Individual> augmented() {
         population = new ArrayList<>();
-        for (int i = 0; i < Parameters.populationSize + 1000; i++) {
-            // chromosome weights are initialised randomly in the constructor
-            Individual individual = new Individual();
-            population.add(individual);
-        }
-        evaluateIndividuals(population);
+        IntStream.range(0, Parameters.populationSize + 2500)
+                .mapToObj(i -> new Individual()).forEachOrdered(individual -> population.add(individual));
+        evaluate(population);
 
-        return population
-                .stream()
-                .sorted(Comparator.naturalOrder())
-                .limit(Parameters.populationSize)
-                .collect(Collectors.toCollection(ArrayList::new));
+        return population.stream().sorted(Comparator.naturalOrder())
+                .limit(Parameters.populationSize).collect(Collectors.toCollection(ArrayList::new));
     }
 
-    private ArrayList<Individual> PosNegInitialise() {
+    /**
+     * Use positive-negative initialisation to generate a population
+     * @return An array of {@link Individual}s.
+     */
+    private ArrayList<Individual> positiveNegative() {
         population = new ArrayList<>();
-        for (int i = 0; i < Parameters.populationSize; ++i) {
-            // chromosome weights are initialised randomly in the constructor
-            Individual individual = new Individual();
-            Individual individual2 = individual.copy();
 
-            for (int j = 0; j < individual2.chromosome.length; j++) {
-                // Flip chromes
-                individual2.chromosome[j] = 0 - individual2.chromosome[j];
-            }
+        IntStream.range(0, Parameters.populationSize).mapToObj(i -> new Individual()).forEach(individual -> {
+            Individual individual2 = individual.copy();
+            Arrays.setAll(individual2.chromosome, j -> 0 - individual2.chromosome[j]);
             individual.fitness = Fitness.evaluate(individual, this);
             individual2.fitness = Fitness.evaluate(individual2, this);
+            population.add(individual.fitness < individual2.fitness ? individual : individual2);
+        });
 
-            if (individual.fitness < individual2.fitness) {
-                population.add(individual);
-            } else {
-                population.add(individual2);
-            }
-        }
         return population;
     }
 
     /**
      * SELECTION
      */
-    private Individual randSelect() {
+    private Individual random() {
         Individual parent = population.get(Parameters.random.nextInt(Parameters.populationSize));
         return parent.copy();
     }
 
-    private Individual tournamentSelect() {
+    private Individual tournament() {
         /*
           Elitism - copy the best chromosome (or a few best chromosomes) to new population
           (happens if tournament size is equal to total pop size)
           1 - Pick t solutions completely at random from the population
           2 - Select the best of the t solutions to be a parent
          */
-        final int TOURNAMET_SIZE = Parameters.TOURNAMENT_SIZE;
+        final int tournament = Parameters.TOURNAMENT_SIZE;
 
         Collections.shuffle(population);
         Individual parent = population
                 .stream()
-                .limit(TOURNAMET_SIZE).min(Comparator.naturalOrder())
+                .limit(tournament).min(Comparator.naturalOrder())
                 .orElse(null);
         return parent;
     }
 
     // Fitness proportionate selection - roulette wheel selection
-    private Individual rouletteSelect() {
+    private Individual roulette() {
         // calculate the total weight
         double weightSum = 0.0;
         for (Individual c : population) {
@@ -238,7 +232,7 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
         return population.get(-1);
     }
 
-    private Individual rankSelect() {
+    private Individual rankRoutes() {
 
         double[] fitness = new double[Parameters.populationSize];
         for (int i = 0; i < Parameters.populationSize; i++) {
@@ -253,7 +247,7 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
     /**
      * CROSSOVER
      */
-    private @NotNull ArrayList<Individual> uniformCrossover(@NotNull Individual parent1, @NotNull Individual parent2) {
+    private @NotNull ArrayList<Individual> uniform(@NotNull Individual parent1, @NotNull Individual parent2) {
         Individual child1 = new Individual();
         Individual child2 = new Individual();
 
@@ -275,7 +269,7 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
         return children;
     }
 
-    private @NotNull ArrayList<Individual> onePointCrossover(@NotNull Individual parent1, @NotNull Individual parent2) {
+    private @NotNull ArrayList<Individual> onePoint(@NotNull Individual parent1, @NotNull Individual parent2) {
         Individual child1 = new Individual();
         Individual child2 = new Individual();
         int cutPoint = Parameters.random.nextInt(parent1.chromosome.length);
@@ -296,7 +290,7 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
         return children;
     }
 
-    private @NotNull ArrayList<Individual> twoPointCrossover(@NotNull Individual parent1, Individual parent2) {
+    private @NotNull ArrayList<Individual> twoPoint(@NotNull Individual parent1, Individual parent2) {
         Individual child1 = new Individual();
         Individual child2 = new Individual();
 
@@ -320,7 +314,7 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
         return children;
     }
 
-    private @NotNull ArrayList<Individual> arithmeticCrossover(@NotNull Individual parent1, Individual parent2) {
+    private @NotNull ArrayList<Individual> arithmetic(@NotNull Individual parent1, Individual parent2) {
         Individual child = new Individual();
         for (int i = 0; i < parent1.chromosome.length; i++) {
             double avgChrom = (parent1.chromosome[i] + parent2.chromosome[i]) / 2;
@@ -346,7 +340,7 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
         }
     }
 
-    private void constrainedMutation(@NotNull ArrayList<Individual> individuals) {
+    private void constrained(@NotNull ArrayList<Individual> individuals) {
         for (Individual individual : individuals) {
             IntStream.range(0, individual.chromosome.length).filter(i -> Parameters.random.nextDouble() < Parameters.mutateRate).forEachOrdered(i -> {
                 if (Parameters.random.nextBoolean()) {
@@ -370,7 +364,7 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
         }
     }
 
-    private void mutateAnnealing(@NotNull ArrayList<Individual> individuals, double temp) {
+    private void annealing(@NotNull ArrayList<Individual> individuals, double temp) {
         for (Individual individual : individuals) {
             Individual newIndividual = individual.copy();
 
@@ -394,7 +388,7 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
             double neighbourEnergy = newIndividual.fitness;
 
             // Decide if we should accept the neighbour
-            if (acceptanceProbability(currentEnergy, neighbourEnergy, temp)
+            if (acceptance(currentEnergy, neighbourEnergy, temp)
                     >= Parameters.random.nextDouble()) {
                 individual = newIndividual;
             }
@@ -405,7 +399,7 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
     /**
      * REPLACEMENT
      */
-    private void replaceWorst(@NotNull ArrayList<Individual> individuals) {
+    private void worst(@NotNull ArrayList<Individual> individuals) {
         for (Individual individual : individuals) {
             int idx = getWorstIndex();
             population.set(idx, individual);
@@ -413,7 +407,7 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
     }
 
     // Replace using tournament - same as selection but with worst
-    private void tournamentReplace(@NotNull ArrayList<Individual> individuals) {
+    private void tournament(@NotNull ArrayList<Individual> individuals) {
         final int TOURNAMET_SIZE = Parameters.TOURNAMENT_SIZE;
 
         for (Individual individual : individuals) {
