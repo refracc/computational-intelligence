@@ -20,8 +20,19 @@ public class Helpers {
             case STEP -> (v <= 0) ? -1.0d : 1.0d;
             case SWISH -> (v * (1 / (1 + Math.exp(-v))));
             case TANH -> (v < -20.0d) ? -1.0d : (v > 20.0d) ? 1.0d : Math.tanh(v);
-            default -> (v > 0) ? v : (Math.exp(v) - 1) / 10;
+            case ELU -> (v > 0) ? v : (Math.exp(v) - 1) / 10;
         };
+    }
+
+    /**
+     * The acceptance rate for the Annealing operator.
+     * @param currentFitness The current fitness
+     * @param newFitness The new fitness
+     * @param temperature The temperature.
+     * @return 1 if the current fitness is less than the new fitness, exp(current - new)/temperature otherwise.
+     */
+    public static double acceptance(double currentFitness, double newFitness, double temperature) {
+        return currentFitness < newFitness ? 1.0 : Math.exp((currentFitness - newFitness) / temperature);
     }
 
     @Contract(pure = true)

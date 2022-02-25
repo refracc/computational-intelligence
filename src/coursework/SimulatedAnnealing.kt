@@ -59,7 +59,7 @@ class SimulatedAnnealing : NeuralNetwork() {
             newIndividual.fitness = Fitness.evaluate(newIndividual, this)
 
             // Decide to accept neighbouring chromosome.
-            val acceptance = acceptance(individual.fitness, newIndividual.fitness, temperature)
+            val acceptance = Helpers.acceptance(individual.fitness, newIndividual.fitness, temperature)
             individual = if (acceptance > Parameters.random.nextDouble()) newIndividual.copy() else individual
 
             // Replace the best solution that has been found thus far...
@@ -74,17 +74,5 @@ class SimulatedAnnealing : NeuralNetwork() {
         }
         // Save the Neural Network weights.
         saveNeuralNetwork()
-    }
-
-    /**
-     * The acceptance rate
-     *
-     * @param currentFitness The fitness value of the current individual
-     * @param newFitness     The fitness value of another individual
-     * @param temperature    The temperature in the SimulatedAnnealing algorithm.
-     * @return 1 if accepted.
-     */
-    private fun acceptance(currentFitness: Double, newFitness: Double, temperature: Double): Double {
-        return if (newFitness < currentFitness) 1.0 else exp((currentFitness - newFitness) / temperature)
     }
 }
