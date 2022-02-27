@@ -21,6 +21,7 @@ import java.util.function.Consumer
  * @author Stewart A
  */
 class ExampleEvolutionaryAlgorithm : NeuralNetwork() {
+
     /**
      * The function that will be setting up the Activation Function for the Neural Network
      *
@@ -32,7 +33,6 @@ class ExampleEvolutionaryAlgorithm : NeuralNetwork() {
     }
 
     override fun run() {
-
         // Initialise the population
         population = when (Parameters.INITIALISATION) {
             Initialisation.AUGMENTED -> augmented()
@@ -91,6 +91,8 @@ class ExampleEvolutionaryAlgorithm : NeuralNetwork() {
 
             // Evaluate the children
             evaluate(children)
+
+            // Perform replacement
             when (Parameters.REPLACEMENT) {
                 Replacement.TOURNAMENT -> tournament(children)
                 Replacement.WORST -> worst(children)
@@ -123,7 +125,11 @@ class ExampleEvolutionaryAlgorithm : NeuralNetwork() {
             }
             return best
         }
-    /* ******************************* */ /* ******** INITIALISATION ******* */ /* ******************************* */
+
+    /* ******************************* */
+    /* ******** INITIALISATION ******* */
+    /* ******************************* */
+
     /**
      * Initialise the population with a pseudo-random set of [Individual]s.
      * @return An array of [Individual]s.
@@ -227,10 +233,14 @@ class ExampleEvolutionaryAlgorithm : NeuralNetwork() {
         for (i in 0 until Parameters.populationSize) {
             fitness[i] = (i + 1).toDouble()
         }
-        Helpers.unitize1(fitness)
+        Helpers.unitise(fitness)
         return population[Helpers.random(fitness)]
     }
-    /* ******************************* */ /* ********** CROSSOVER ********** */ /* ******************************* */
+
+    /* ******************************* */
+    /* ********** CROSSOVER ********** */
+    /* ******************************* */
+
     /**
      * Use uniform crossover to create children from the population.
      * @param parent1 An [Individual] from the population.
@@ -316,7 +326,11 @@ class ExampleEvolutionaryAlgorithm : NeuralNetwork() {
         }
         return java.util.ArrayList(listOf(child))
     }
-    /* ******************************* */ /* *********** MUTATION ********** */ /* ******************************* */
+
+    /* ******************************* */
+    /* *********** MUTATION ********** */
+    /* ******************************* */
+
     /**
      * Use standard mutation to mutate a chromosome based on a predetermined mutation rate.
      * @param individuals The population of [Individual]s.
@@ -393,6 +407,10 @@ class ExampleEvolutionaryAlgorithm : NeuralNetwork() {
             ) individuals[index] = i
         }
     }
+
+    /* ******************************* */
+    /* ********* REPLACEMENT ********* */
+    /* ******************************* */
 
     /**
      * Replace the worst [Individual]s in the population with new random [Individual]s
