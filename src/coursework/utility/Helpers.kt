@@ -40,7 +40,7 @@ object Helpers {
     }
 
     @Contract(pure = true)
-    private fun norm1(x: DoubleArray): Double {
+    private fun norm(x: DoubleArray): Double {
         var norm = 0.0
         for (n in x) {
             norm += abs(n)
@@ -49,7 +49,7 @@ object Helpers {
     }
 
     fun unitise(x: DoubleArray) {
-        val n = norm1(x)
+        val n = norm(x)
         for (i in x.indices) {
             x[i] /= n
         }
