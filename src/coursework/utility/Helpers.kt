@@ -13,13 +13,15 @@ import kotlin.math.tanh
  * that is contained in the [coursework.ExampleEvolutionaryAlgorithm] class.
  */
 object Helpers {
+
+    /**
+     * A list of the possible activation functions that can be used within the program.
+     */
     fun activationFunction(v: Double): Double {
         val max = 0.0.coerceAtLeast(1.0.coerceAtMost((v + 1) / 2))
         return when (Parameters.ACTIVATION) {
-            Activation.HARD_ELISH -> if (v < 0) max * (exp(v) - 1) else v * max
             Activation.LEAKY_RELU -> if (v > 0) v else v / 100
             Activation.RELU -> if (v > 0.0) v else -1.0
-            Activation.SELU -> if (v > 0) v * 1.0507009 else 1.0507009 * (1.673263 * exp(v)) - 1.673263
             Activation.STEP -> if (v <= 0) -1.0 else 1.0
             Activation.SWISH -> v * (1 / (1 + exp(-v)))
             Activation.TANH -> if (v < -20.0) -1.0 else if (v > 20.0) 1.0 else tanh(v)

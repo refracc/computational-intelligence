@@ -20,6 +20,7 @@ import java.util.function.Consumer
  *
  * @author Stewart A
  */
+@Suppress("WHEN_ENUM_CAN_BE_NULL_IN_JAVA")
 class ExampleEvolutionaryAlgorithm : NeuralNetwork() {
 
     /**
@@ -36,7 +37,7 @@ class ExampleEvolutionaryAlgorithm : NeuralNetwork() {
         // Initialise the population
         population = when (Parameters.INITIALISATION) {
             Initialisation.AUGMENTED -> augmented()
-            Initialisation.POSITIVE_NEGATIVE -> positiveNegative()
+            Initialisation.OPPOSITION -> opposition()
             Initialisation.RANDOM -> initialise()
         }
         best = bestIndividual
@@ -165,7 +166,7 @@ class ExampleEvolutionaryAlgorithm : NeuralNetwork() {
      * Use positive-negative initialisation to generate a population
      * @return An array of [Individual]s.
      */
-    private fun positiveNegative(): java.util.ArrayList<Individual> {
+    private fun opposition(): java.util.ArrayList<Individual> {
         population = java.util.ArrayList()
         IntStream.range(0, Parameters.populationSize).mapToObj { Individual() }
             .forEach { individual: Individual ->

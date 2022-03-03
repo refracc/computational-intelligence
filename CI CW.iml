@@ -32,5 +32,6 @@
     <orderEntry type="library" name="jfreechart-1.0.19" level="project" />
     <orderEntry type="library" name="LunarCW2020" level="project" />
     <orderEntry type="library" name="kotlin-reflect-sources" level="project" />
+    <orderEntry type="library" name="jetbrains.annotations" level="project" />
   </component>
 </module>

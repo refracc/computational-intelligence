@@ -25,7 +25,7 @@ public class Parameters {
     public static final Crossover CROSSOVER = Crossover.TWO_POINT;
     public static final Mutation MUTATION = Mutation.STANDARD;
     public static final Replacement REPLACEMENT = Replacement.TOURNAMENT;
-    public static final Activation ACTIVATION = Activation.STEP;
+    public static final Activation ACTIVATION = Activation.TANH;
     public static final double COOLING_RATE = 0.0011d;
     public static final double TEMPERATURE = 100000d;
     public static final int TOURNAMENT_SIZE = 10;

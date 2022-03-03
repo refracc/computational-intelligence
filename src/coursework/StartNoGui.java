@@ -12,14 +12,14 @@ import model.NeuralNetwork;
 public class StartNoGui {
 
     public static void main(String[] args) {
-        /**
+        /*
          * Train the Neural Network using our Evolutionary Algorithm
          *
          */
 
         //Set the parameters here or directly in the Parameters Class
         Parameters.maxEvaluations = 20000; // Used to terminate the EA after this many generations
-        Parameters.populationSize = 200; // Population Size
+        Parameters.populationSize = 50; // Population Size
 
         //number of hidden nodes in the neural network
         Parameters.setHidden(5);
@@ -61,7 +61,7 @@ public class StartNoGui {
          *
          */
 
-        ExampleEvolutionaryAlgorithm nn2 = ExampleEvolutionaryAlgorithm.loadNeuralNetwork("1518446327913-5.txt");
+        ExampleEvolutionaryAlgorithm nn2 = ExampleEvolutionaryAlgorithm.loadNeuralNetwork(null);
         Parameters.setDataSet(DataSet.Random);
         double fitness2 = Fitness.evaluate(nn2);
         System.out.println("Fitness on " + Parameters.getDataSet() + " " + fitness2);
