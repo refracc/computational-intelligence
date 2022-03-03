@@ -4,8 +4,12 @@ import coursework.options.*;
 import model.LunarParameters;
 import model.LunarParameters.DataSet;
 import model.NeuralNetwork;
+import org.jetbrains.annotations.NotNull;
 
+import java.awt.*;
+import java.awt.datatransfer.StringSelection;
 import java.lang.reflect.Field;
+import java.util.Objects;
 import java.util.Random;
 
 public class Parameters {
@@ -21,16 +25,17 @@ public class Parameters {
     public static final Crossover CROSSOVER = Crossover.TWO_POINT;
     public static final Mutation MUTATION = Mutation.STANDARD;
     public static final Replacement REPLACEMENT = Replacement.TOURNAMENT;
-    public static final Activation ACTIVATION = Activation.SELU;
+    public static final Activation ACTIVATION = Activation.STEP;
     public static final double COOLING_RATE = 0.0011d;
     public static final double TEMPERATURE = 100000d;
     public static final int TOURNAMENT_SIZE = 10;
+
 
     // specifies minimum and maximum weight values
     public static double maxGene = 3;
     public static double minGene = -3;
     public static int populationSize = 50;
-    public static int maxEvaluations = 50000;
+    public static int maxEvaluations = 20000;
 
     // Parameters for mutation
     // Rate = probability of changing a gene
@@ -65,11 +70,12 @@ public class Parameters {
         numGenes = calculateNumGenes();
     }
 
-    public static String printParams() {
+    public static @NotNull String printParams() {
         StringBuilder str = new StringBuilder();
         for (Field field : Parameters.class.getDeclaredFields()) {
             String name = field.getName();
             Object val = null;
+
             try {
                 val = field.get(null);
             } catch (IllegalArgumentException | IllegalAccessException e) {
@@ -77,8 +83,8 @@ public class Parameters {
                 e.printStackTrace();
             }
             str.append(name).append(" \t").append(val).append("\r\n");
-
         }
+
         return str.toString();
     }
 
