@@ -4,7 +4,7 @@ import model.NeuralNetwork
 import model.Individual
 import model.Fitness
 import kotlin.jvm.JvmStatic
-import coursework.ExampleHillClimber
+import kotlin.math.tanh
 
 class ExampleHillClimber : NeuralNetwork() {
     override fun run() {
@@ -46,7 +46,7 @@ class ExampleHillClimber : NeuralNetwork() {
         } else if (x > 20.0) {
             return 1.0
         }
-        return Math.tanh(x)
+        return tanh(x)
     }
 
     companion object {

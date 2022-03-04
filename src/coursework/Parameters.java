@@ -15,7 +15,7 @@ import java.util.Random;
 public class Parameters {
 
     // Set the NeuralNetwork class here to use your code from the GUI
-    public static final Class<? extends NeuralNetwork> neuralNetworkClass = ExampleEvolutionaryAlgorithm.class;
+    public static final Class<? extends NeuralNetwork> neuralNetworkClass = ExampleHillClimber.class;
 
     /**
      * Custom parameters
@@ -83,6 +83,8 @@ public class Parameters {
                 e.printStackTrace();
             }
             str.append(name).append(" \t").append(val).append("\r\n");
+
+
         }
 
         return str.toString();
