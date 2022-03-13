@@ -15,21 +15,20 @@ import java.util.Random;
 public class Parameters {
 
     // Set the NeuralNetwork class here to use your code from the GUI
-    public static final Class<? extends NeuralNetwork> neuralNetworkClass = ExampleHillClimber.class;
+    public static final Class<? extends NeuralNetwork> neuralNetworkClass = ExampleEvolutionaryAlgorithm.class;
 
     /**
      * Custom parameters
      */
-    public static final Initialisation INITIALISATION = Initialisation.AUGMENTED;
-    public static final Selection SELECTION = Selection.TOURNAMENT;
-    public static final Crossover CROSSOVER = Crossover.TWO_POINT;
-    public static final Mutation MUTATION = Mutation.STANDARD;
-    public static final Replacement REPLACEMENT = Replacement.TOURNAMENT;
-    public static final Activation ACTIVATION = Activation.TANH;
-    public static final double COOLING_RATE = 0.0011d;
+    public static Initialisation INITIALISATION = Initialisation.AUGMENTED;
+    public static Selection SELECTION = Selection.TOURNAMENT;
+    public static Crossover CROSSOVER = Crossover.TWO_POINT;
+    public static Mutation MUTATION = Mutation.STANDARD;
+    public static Replacement REPLACEMENT = Replacement.TOURNAMENT;
+    public static Activation ACTIVATION = Activation.RELU;
+    public static double COOLING_RATE = 0.0011d;
     public static final double TEMPERATURE = 100000d;
-    public static final int TOURNAMENT_SIZE = 10;
-
+    public static int TOURNAMENT_SIZE = 10;
 
     // specifies minimum and maximum weight values
     public static double maxGene = 3;
