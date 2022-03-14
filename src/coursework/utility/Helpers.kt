@@ -3,7 +3,6 @@ package coursework.utility
 import coursework.Parameters
 import coursework.options.Activation
 import org.jetbrains.annotations.Contract
-import java.lang.IllegalArgumentException
 import kotlin.math.abs
 import kotlin.math.exp
 import kotlin.math.tanh
@@ -18,7 +17,6 @@ object Helpers {
      * A list of the possible activation functions that can be used within the program.
      */
     fun activationFunction(v: Double): Double {
-        val max = 0.0.coerceAtLeast(1.0.coerceAtMost((v + 1) / 2))
         return when (Parameters.ACTIVATION) {
             Activation.LEAKY_RELU -> if (v > 0) v else v / 100
             Activation.RELU -> if (v > 0.0) v else -1.0

@@ -1,6 +1,5 @@
 package coursework
 
-import kotlin.jvm.JvmStatic
 import model.Gui
 
 object StartGui {

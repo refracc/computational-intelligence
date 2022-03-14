@@ -1,7 +1,6 @@
 package coursework;
 
 import coursework.options.*;
-import coursework.options.Activation;
 import model.LunarParameters;
 import model.LunarParameters.DataSet;
 import model.NeuralNetwork;
@@ -14,36 +13,36 @@ public class Parameters {
 
     // Set the NeuralNetwork class here to use your code from the GUI
     public static final Class<? extends NeuralNetwork> neuralNetworkClass = ExampleEvolutionaryAlgorithm.class;
+    public static final double TEMPERATURE = 100000d;
 
-    /**
+    /*
      * Custom parameters
      */
     public static Initialisation INITIALISATION = Initialisation.AUGMENTED;
     public static Selection SELECTION = Selection.TOURNAMENT;
-    public static Crossover CROSSOVER = Crossover.TWO_POINT;
+    public static Crossover CROSSOVER = Crossover.ONE_POINT;
     public static Mutation MUTATION = Mutation.STANDARD;
-    public static Replacement REPLACEMENT = Replacement.TOURNAMENT;
-    public static Activation ACTIVATION = Activation.RELU;
-    public static double COOLING_RATE = 0.0011d;
-    public static final double TEMPERATURE = 100000d;
+    public static Replacement REPLACEMENT = Replacement.WORST;
+    public static Activation ACTIVATION = Activation.TANH;
+    public static double COOLING_RATE = 0.0012d;
     public static int TOURNAMENT_SIZE = 10;
 
     // specifies minimum and maximum weight values
-    public static double maxGene = 3;
-    public static double minGene = -3;
-    public static int populationSize = 50;
+    public static double maxGene = 0.7;
+    public static double minGene = -0.7;
+    public static int populationSize = 80;
     public static int maxEvaluations = 20000;
 
     // Parameters for mutation
     // Rate = probability of changing a gene
     // Change = the maximum +/- adjustment to the gene value
-    public static double mutateRate = 0.45; // mutation rate for mutation operator
-    public static double mutateChange = 0.95; // delta change for mutation operator
+    public static double mutateRate = 0.90; // mutation rate for mutation operator
+    public static double mutateChange = 1.50; // delta change for mutation operator
 
     //Random number generator used throughout the application
     public static long seed = System.currentTimeMillis();
     public static Random random = new Random(seed);
-    private static int numHidden = 5;
+    private static int numHidden = 8;
     private static int numGenes = calculateNumGenes();
 
     /**

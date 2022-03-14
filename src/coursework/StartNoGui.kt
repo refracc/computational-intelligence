@@ -1,19 +1,12 @@
 package coursework
 
-import kotlin.jvm.JvmStatic
-import java.io.IOException
-import kotlin.Throws
+import coursework.options.*
+import model.Fitness
 import model.LunarParameters.DataSet
 import model.NeuralNetwork
-import model.Fitness
-import java.io.FileWriter
-import coursework.options.Initialisation
-import coursework.options.Selection
-import coursework.options.Crossover
-import coursework.options.Replacement
-import coursework.options.Activation
-import coursework.options.Mutation
 import org.jetbrains.annotations.Contract
+import java.io.FileWriter
+import java.io.IOException
 
 /**
  * Example of how to run the [ExampleEvolutionaryAlgorithm] without the need for the GUI
@@ -44,7 +37,7 @@ object StartNoGui {
         try {
 //            findBestPopulationSize()
 //            findBestMutationRate()
-            findBestMutationChange()
+//            findBestMutationChange()
 //            findBestHiddenNodes()
 //            findBestSelection()
 //            testTournamentSize()
@@ -56,7 +49,7 @@ object StartNoGui {
 //            findMinMaxGenes()
 //            findBestSACoolRate()
 //            findBestActivationSA()
-//            testAlgorithms()
+            testAlgorithms()
         } catch (e: IOException) {
             // TODO Auto-generated catch block
             e.printStackTrace()

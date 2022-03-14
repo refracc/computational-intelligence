@@ -1,9 +1,8 @@
 package coursework
 
-import model.NeuralNetwork
-import model.Individual
 import model.Fitness
-import kotlin.jvm.JvmStatic
+import model.Individual
+import model.NeuralNetwork
 import kotlin.math.tanh
 
 class ExampleHillClimber : NeuralNetwork() {

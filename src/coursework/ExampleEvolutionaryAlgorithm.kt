@@ -1,19 +1,14 @@
 package coursework
 
-import model.NeuralNetwork
-import coursework.options.Initialisation
-import model.Individual
-import coursework.options.Selection
-import coursework.options.Crossover
-import coursework.options.Mutation
-import coursework.options.Replacement
+import coursework.options.*
 import coursework.utility.Helpers
 import model.Fitness
-import java.util.stream.IntStream
-import java.util.stream.Collectors
-import java.util.Arrays
-import java.util.Comparator
+import model.Individual
+import model.NeuralNetwork
+import java.util.*
 import java.util.function.Consumer
+import java.util.stream.Collectors
+import java.util.stream.IntStream
 
 /**
  * Implement an Evolutionary Algorithm (extending [NeuralNetwork]) to solve the Lunar Landers problem.
