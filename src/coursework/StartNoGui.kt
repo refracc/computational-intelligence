@@ -1,12 +1,10 @@
 package coursework
 
 import kotlin.jvm.JvmStatic
-import coursework.StartNoGui
 import java.io.IOException
 import kotlin.Throws
 import model.LunarParameters.DataSet
 import model.NeuralNetwork
-import coursework.ExampleEvolutionaryAlgorithm
 import model.Fitness
 import java.io.FileWriter
 import coursework.options.Initialisation
@@ -14,7 +12,6 @@ import coursework.options.Selection
 import coursework.options.Crossover
 import coursework.options.Replacement
 import coursework.options.Activation
-import coursework.SimulatedAnnealing
 import coursework.options.Mutation
 import org.jetbrains.annotations.Contract
 
@@ -45,21 +42,21 @@ object StartNoGui {
 //		System.out.println("Fitness on " + Parameters.getDataSet() + " " + fitness2);
 //
         try {
-            findBestPopulationSize()
-            findBestMutationRate()
+//            findBestPopulationSize()
+//            findBestMutationRate()
             findBestMutationChange()
-            findBestHiddenNodes()
-            findBestSelection()
-            testTournamentSize()
-            findBestCrossover()
-            findBestInitialisation()
-            findBestReplace()
-            findBestActivation()
-            findBestMutation()
-            findMinMaxGenes()
-            findBestSACoolRate()
-            findBestActivationSA()
-            testAlgorithms()
+//            findBestHiddenNodes()
+//            findBestSelection()
+//            testTournamentSize()
+//            findBestCrossover()
+//            findBestInitialisation()
+//            findBestReplace()
+//            findBestActivation()
+//            findBestMutation()
+//            findMinMaxGenes()
+//            findBestSACoolRate()
+//            findBestActivationSA()
+//            testAlgorithms()
         } catch (e: IOException) {
             // TODO Auto-generated catch block
             e.printStackTrace()
@@ -168,8 +165,8 @@ object StartNoGui {
 
     @Throws(IOException::class)
     private fun findBestMutationChange() {
-        var i = 1.15
-        while (i < 1.75) {
+        var i = 0.40
+        while (i < 1.50) {
 
             // For each pop size
             var avgTrain = 0.0

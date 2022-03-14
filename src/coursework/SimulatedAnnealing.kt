@@ -4,7 +4,6 @@ import coursework.utility.Helpers
 import model.Fitness
 import model.Individual
 import model.NeuralNetwork
-import kotlin.math.exp
 
 /**
  * This class is an implementation of the Simulated Annealing algorithm that can be used to attempt to solve the problem of landing lunar landers.

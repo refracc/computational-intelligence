@@ -1,15 +1,13 @@
 package coursework;
 
 import coursework.options.*;
+import coursework.options.Activation;
 import model.LunarParameters;
 import model.LunarParameters.DataSet;
 import model.NeuralNetwork;
 import org.jetbrains.annotations.NotNull;
 
-import java.awt.*;
-import java.awt.datatransfer.StringSelection;
 import java.lang.reflect.Field;
-import java.util.Objects;
 import java.util.Random;
 
 public class Parameters {
